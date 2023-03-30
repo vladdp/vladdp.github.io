@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+		<title>ThreeJSat</title>
 		<style>
 			body { margin: 0; }
 		</style>
@@ -10,8 +10,18 @@
 	<body>
 
         <canvas id="bg"></canvas>
+        
+        <script type="importmap">
+            {
+              "imports": {
+                "three": "https://unpkg.com/three/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three/examples/jsm/",
+                "sat": "./satellite.js"
+              }
+            }
+        </script>
 
         <script type="module" src="main.js"></script>
-
+          
 	</body>
 </html>
