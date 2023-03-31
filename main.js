@@ -4,15 +4,24 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // import { Satellite } from 'sat';
 
+var rot_speed = 0.001;
 
 const scene = new THREE.Scene();
 // scene.background = new THREE.TextureLoader().load('assets/milky_way.jpeg');
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
 });
+
+var button = document.getElementById('Speed');
+button.addEventListener("click", function onButtonClick(event) {
+    rot_speed += 0.01;
+});
+
+var text = document.getElementById("info");
+
 
 const scale = 10000;
 
@@ -28,11 +37,6 @@ controls.update();
 
 const earth_r = 6371 / scale
 
-// const earth = new THREE.Mesh(
-//     new THREE.SphereGeometry( earth_r, 64, 64 ),
-//     new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: true } )
-// )
-
 const earth = new THREE.Mesh(
     new THREE.SphereGeometry( earth_r, 64, 64 ),
     new THREE.MeshBasicMaterial({
@@ -43,7 +47,7 @@ scene.add(earth);
 
 // Orbit Parameters
 const a = 100000 / scale;
-const e = 0.8;
+const e = 0.5;
 
 const p = a * (1-Math.pow(e, 2));
 
@@ -62,13 +66,10 @@ for (var i=0; i < 100; i++) {
     points.push( new THREE.Vector3( x[i], y[i], z[i] ));
 }
 const ellipse_geometry = new THREE.BufferGeometry().setFromPoints( points );
-const ellipse_material = new THREE.LineBasicMaterial( { color: 0xff00ff } );
+const ellipse_material = new THREE.LineBasicMaterial( { color: 0xeb7134 } );
 const line = new THREE.Line( ellipse_geometry, ellipse_material );
 
 scene.add(line)
-
-console.log()
-
 
 function linspace(start, end, steps) {
     var x = [];
@@ -86,9 +87,15 @@ function linspace(start, end, steps) {
 function animate() {
     requestAnimationFrame(animate);
 
-    earth.rotation.y += 0.001
+    earth.rotation.y += rot_speed;
 
-    controls.update()
+    controls.update();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    text.innerHTML = "Speed: " + rot_speed;
 
     renderer.render(scene, camera);
 }
