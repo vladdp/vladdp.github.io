@@ -9,8 +9,6 @@
 	</head>
 	<body>
 
-        <div id="info">Description</div>
-
         <canvas id="bg"></canvas>
         
         <script type="importmap">
@@ -18,19 +16,15 @@
               "imports": {
                 "three": "https://unpkg.com/three/build/three.module.js",
                 "three/addons/": "https://unpkg.com/three/examples/jsm/",
-                "sat": "./satellite.js"
+                "sat": "./satellite.js",
+                "utils": "./utils.js"
               }
             }
         </script>
 
         <link rel="stylesheet" href="style.css">
 
-        
         <script type="module" src="main.js"></script>
-        
-        <button style="top:0" id="Speed" class="ui">Increase Speed</button>
-
-        <input type="text" id="eccentricity">
           
 	</body>
 </html>
