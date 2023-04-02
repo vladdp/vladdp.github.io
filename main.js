@@ -1,11 +1,10 @@
 import * as THREE from 'three';
-
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import * as utils from 'utils';
 import { Satellite } from 'sat';
+import { UI } from 'ui';
+import * as utils from 'utils';
 
-var rot_speed = utils.rot_speed;
 const scale = utils.scale;
 
 const scene = new THREE.Scene();
@@ -17,24 +16,7 @@ const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
 });
 
-// Create Title text element
-const title = document.createElement('div');
-title.innerText = "ThreeJSat";
-title.id = 'title';
-document.body.appendChild(title);
-
-// var text = document.getElementById("info");
-
-// Create button
-const addSatButt = document.createElement('button');
-addSatButt.innerText = "Add Satellite";
-addSatButt.id = 'AddSatButt';
-addSatButt.addEventListener('click', () => { rot_speed += 1; });
-document.body.appendChild(addSatButt);
-// addSatButt.style.display = 'none';
-
-// var dropDown = document.createElement('')
-
+const ui = new UI();
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -82,30 +64,26 @@ scene.add(line_y);
 scene.add(line_z);
 
 // Satellite
-const sats = []
-sats.push( new Satellite() )
-const points = sats[0].orbit();
+ui.addSat("Sat #1");
 
-// console.log(points.length)
+scene.add( ui.sats[0].orbit() );
 
-const ellipse_geometry = new THREE.BufferGeometry().setFromPoints( points );
-const ellipse_material = new THREE.LineBasicMaterial( { color: 0xeb7134 } );
-const line = new THREE.Line( ellipse_geometry, ellipse_material );
-
-scene.add(line)
+function update() {
+    earth.rotation.y += ui.rotSpeed;
+    
+    controls.update();
+}
 
 function animate() {
     requestAnimationFrame(animate);
 
-    earth.rotation.y += rot_speed;
-
-    controls.update();
+    update();
 
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 
-    // text.innerHTML = "Speed: " + rot_speed;
+    // text.innerHTML = "Speed: " + rotSpeed;
 
     renderer.render(scene, camera);
 }

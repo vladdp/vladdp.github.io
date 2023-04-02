@@ -17,17 +17,23 @@ canvas {
     margin: 20px;
 }
 
-#AddSatButt {
+#addSatButt {
     position: absolute;
     top: 80px;
     left: 20px;
 }
 
-#info {
+#satList {
     position: absolute;
-    top: 100px;
+    top: 120px;
     left: 20px;
-    color: #22ba5f;
+}
+
+#orbParams {
+    position: absolute;
+    color: whitesmoke;
+    top: 200px;
+    left: 20px;
 }
 
 .ui {

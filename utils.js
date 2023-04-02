@@ -1,5 +1,5 @@
 export const scale = 10000;
-export const rot_speed = 0.001;
+export const rotSpeed = 0.001;
 
 export function linspace(start, end, steps) {
     var x = [];

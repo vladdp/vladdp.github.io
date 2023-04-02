@@ -7,7 +7,10 @@ class Satellite {
     e = 0.5;
     points = [];
     
-    constructor() {
+    constructor(name="") {
+        this.name = name;
+        this.option = document.createElement('option');
+        this.option.text = this.name;
     }
 
     orbit() {
@@ -29,7 +32,11 @@ class Satellite {
         utils.rot_x(points, Math.PI / 2);
         // utils.rot_y(points, 45 * (Math.PI/180));
 
-        return points;
+        const ellipse_geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const ellipse_material = new THREE.LineBasicMaterial( { color: 0xeb7134 } );
+        const orbit = new THREE.Line( ellipse_geometry, ellipse_material );
+
+        return orbit;
     }
 }
 
