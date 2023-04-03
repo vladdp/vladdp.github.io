@@ -63,14 +63,16 @@ scene.add(line_x);
 scene.add(line_y);
 scene.add(line_z);
 
-// Satellite
-ui.addSat("Sat #1");
-
+ui.addSat();
 scene.add( ui.sats[0].orbit() );
 
 function update() {
     earth.rotation.y += ui.rotSpeed;
-    
+
+    for (var i=0; i<ui.sats.length; i++) {
+        ui.sats[i].update();
+    }
+
     controls.update();
 }
 
@@ -82,8 +84,6 @@ function animate() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-
-    // text.innerHTML = "Speed: " + rotSpeed;
 
     renderer.render(scene, camera);
 }

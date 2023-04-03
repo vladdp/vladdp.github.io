@@ -13,44 +13,137 @@ canvas {
 #title {
     position: fixed;
     color: whitesmoke;
+    /* font-weight: bold; */
     font-size: 200%;
     margin: 20px;
 }
 
 #addSatButt {
     position: absolute;
-    top: 80px;
+    /* border: 0; */
+    border-radius: 8px;
+    box-sizing: border-box;
+    /* color: #FFFFFF; */
+    /* display: flex; */
+    top: 75px;
     left: 20px;
+    height: 30px;
+    width: 100px;
 }
 
 #satList {
     position: absolute;
+    border-radius: 8px;
     top: 120px;
     left: 20px;
+    width: 100px;
 }
 
 #orbParams {
     position: absolute;
     color: whitesmoke;
+    /* font-weight: bold; */
+    text-decoration: underline;
     top: 200px;
     left: 20px;
+}
+
+#semiMajor {
+    position: absolute;
+    color: whitesmoke;
+    top: 230px;
+    left: 20px;
+}
+
+#inputSemiMajor {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 230px;
+    left: 160px;
+    width: 100px;
+}
+
+#eccentricity {
+    position: absolute;
+    color: whitesmoke;
+    top: 260px;
+    left: 20px;
+}
+
+#inputEccentricity {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 260px;
+    left: 160px;
+    width: 100px;
+}
+
+#inclination {
+    position: absolute;
+    color: whitesmoke;
+    top: 290px;
+    left: 20px;
+}
+
+#inputInclination {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 290px;
+    left: 160px;
+    width: 100px;
+}
+
+#raan {
+    position: absolute;
+    color: whitesmoke;
+    top: 320px;
+    left: 20px;
+}
+
+#inputRaan {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 320px;
+    left: 160px;
+    width: 100px;
+}
+
+#argPer {
+    position: absolute;
+    color: whitesmoke;
+    top: 350px;
+    left: 20px;
+}
+
+#inputArgPer {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 350px;
+    left: 160px;
+    width: 100px;
+}
+
+#period {
+    position: absolute;
+    color: whitesmoke;
+    top: 380px;
+    left: 20px;
+}
+
+#inputPeriod {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 380px;
+    left: 160px;
+    width: 100px;
 }
 
 .ui {
     position: absolute;
 }
-
-#Speed {
-    margin: 20px;
-    color: #b2d429;
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
-}
-
-#eccentricity {
-    position: absolute;
-    top: 200px;
-    background-color: rgba(0, 0, 0, 0);
-}
-
-  
