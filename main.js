@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import { Satellite } from 'sat';
 import { UI } from 'ui';
 import * as utils from 'utils';
 
@@ -20,9 +19,8 @@ const ui = new UI();
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.setX(0);
-camera.position.setY(0);
-camera.position.setZ(20000 / scale);
+camera.position.set(1, 1, 1);
+// camera.lookAt(new THREE.Vector3(1, 1, 1));
 document.body.appendChild( renderer.domElement );
 
 const controls = new OrbitControls( camera, renderer.domElement );
@@ -64,14 +62,13 @@ scene.add(line_y);
 scene.add(line_z);
 
 ui.addSat();
-scene.add( ui.sats[0].orbit() );
+
+export function addToScene(element) {
+    scene.add(element);
+}
 
 function update() {
     earth.rotation.y += ui.rotSpeed;
-
-    for (var i=0; i<ui.sats.length; i++) {
-        ui.sats[i].update();
-    }
 
     controls.update();
 }

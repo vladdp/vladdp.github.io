@@ -1,6 +1,29 @@
 export const scale = 10000;
 export const rotSpeed = 0.001;
 
+export const colors = [
+    0xFF5733, // orange-red
+    0xFFC300, // yellow
+    0xDAF7A6, // pastel green
+    0x2AF3EB, // cyan
+    0xF32AF3, // light purple
+    0x793A00, // brown
+    0x790033, // burgundy
+    0xD20000, // red
+    0xDEDEDE, // light gray
+    0xA4A7FF, // pastel blue #10
+    0xFAA4FF, // light pink
+    0xBF00FF, // purple
+    0x0AFF00, // green
+    0x8D8D8D, // gray
+    0xFF9800, // orange
+    0xFAFF00, // another yellow
+    0x00A2B3, // turquoise
+    0xFFC0CB, // pink
+    0x00ff7f, // mint green
+    0xffffff, // white #20
+];
+
 export function linspace(start, end, steps) {
     var x = [];
 
@@ -50,4 +73,12 @@ export function rot_z(xyz, theta=0) {
                   [-Math.sin(theta), 0, Math.cos(theta)]];
 
     matmul(R_z, xyz);
+}
+
+export function toRadians(angle) {
+    return (angle/180) * Math.PI;
+}
+
+export function toDegrees(angle) {
+    return (angle/Math.PI) * 180;
 }
