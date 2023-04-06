@@ -23,6 +23,8 @@ class Satellite {
         this.option = document.createElement('option');
         this.option.text = this.name;
 
+        this.orbit_quaternion = new THREE.Quaternion();
+
         this.ellipse_geometry = new THREE.BufferGeometry().setFromPoints(this.points);
         this.ellipse_material = new THREE.LineBasicMaterial( { color: color } );
         this.ellipse = new THREE.Line( this.ellipse_geometry, this.ellipse_material );
@@ -35,7 +37,7 @@ class Satellite {
         const p = this.a * (1-Math.pow(this.e, 2));
 
         for (var i=0; i < this.resolution; i++) {
-            this.r[i] = p / ( 1 + this.e * Math.cos(theta[i]) );
+            this.r[i] = p / ( 1 + this.e * Math.cos(this.w + theta[i]) );
             this.x[i] = this.r[i] * Math.cos(theta[i]);
             this.y[i] = this.r[i] * Math.sin(theta[i]);
             this.points.push( new THREE.Vector3( this.x[i], this.y[i], this.z[i] ));
@@ -43,7 +45,6 @@ class Satellite {
 
         utils.rot_x(this.points, (Math.PI / 2) + this.i);
         utils.rot_y(this.points, this.raan);
-        utils.rot_z(this.points, this.w);
     }
 
     update() {

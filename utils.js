@@ -68,9 +68,9 @@ export function rot_y(xyz, theta=0) {
 }
 
 export function rot_z(xyz, theta=0) {
-    const R_z = [ [Math.cos(theta), 0, Math.sin(theta)],
-                  [0, 1, 0],
-                  [-Math.sin(theta), 0, Math.cos(theta)]];
+    const R_z = [ [Math.cos(theta), -Math.sin(theta), 0],
+                  [Math.sin(theta), Math.cos(theta), 0],
+                  [0, 0, 1]];
 
     matmul(R_z, xyz);
 }
