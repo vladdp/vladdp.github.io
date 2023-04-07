@@ -1,40 +1,31 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import { Earth } from 'earth';
+import { Moon } from 'moon';
 import { UI } from 'ui';
-import * as utils from 'utils';
 
-const scale = utils.scale;
 
 const scene = new THREE.Scene();
-// scene.background = new THREE.TextureLoader().load('assets/milky_way.jpeg');
+const ui = new UI();
+const earth = new Earth();
+const moon = new Moon();
 
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(1, 1, 1);
 
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg'),
 });
-
-const ui = new UI();
-
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.set(1, 1, 1);
-// camera.lookAt(new THREE.Vector3(1, 1, 1));
 document.body.appendChild( renderer.domElement );
 
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
-// Earth
-const earth_r = 6371 / scale
-const earth = new THREE.Mesh(
-    new THREE.SphereGeometry( earth_r, 64, 64 ),
-    new THREE.MeshBasicMaterial({
-        map: new THREE.TextureLoader().load('assets/earth.jpg'),
-    })
-);
-scene.add(earth);
+scene.add(earth.shape);
+scene.add(moon.shape);
 
 // TODO: Refactor, and try to use Line3.
 // Draw Earth xyz axis
@@ -67,16 +58,16 @@ export function addToScene(element) {
     scene.add(element);
 }
 
-function update() {
-    earth.rotation.y += ui.rotSpeed;
-
-    controls.update();
-}
-
 function animate() {
-    requestAnimationFrame(animate);
 
-    update();
+    setTimeout( function() {
+        requestAnimationFrame(animate);
+    }, 1000 / 60 );
+    
+    earth.shape.rotation.y += ui.rotSpeed;
+    ui.sats[0].setPos();
+    
+    controls.update();
 
     renderer.setSize( window.innerWidth, window.innerHeight );
     camera.aspect = window.innerWidth / window.innerHeight;

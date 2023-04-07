@@ -97,7 +97,7 @@ class UI {
 
         this.inputTrueAnomaly.setAttribute("type", "number");
         this.inputTrueAnomaly.id = "inputTrueAnomaly";
-        this.inputTrueAnomaly.addEventListener( "input", () => this.setPeriod() );
+        this.inputTrueAnomaly.addEventListener( "input", () => this.setTrueAnomaly() );
         document.body.appendChild(this.inputTrueAnomaly);
     }
     
@@ -110,8 +110,9 @@ class UI {
         this.satList.selectedIndex = this.currentSat;
         
         this.update();
-        this.sats[this.currentSat].update();
-        addToScene(this.sats[this.currentSat].ellipse)
+        this.sats[this.currentSat].setEllipse();
+        addToScene( this.sats[this.currentSat].cube );
+        addToScene( this.sats[this.currentSat].ellipse );
     }
 
     changeSat() {
@@ -131,32 +132,32 @@ class UI {
 
     setSemiMajor() {
         this.sats[this.currentSat].a = this.inputSemiMajor.value / utils.scale;
-        this.sats[this.currentSat].update();
+        this.sats[this.currentSat].setEllipse();
     }
 
     setEccentricity() {
         this.sats[this.currentSat].e = this.inputEccentricity.value;
-        this.sats[this.currentSat].update();
+        this.sats[this.currentSat].setEllipse();
     }
 
     setInclination() {
         this.sats[this.currentSat].i = utils.toRadians(this.inputInclination.value);
-        this.sats[this.currentSat].update();
+        this.sats[this.currentSat].setEllipse();
     }
 
     setRaan() {
         this.sats[this.currentSat].raan = utils.toRadians(this.inputRaan.value);
-        this.sats[this.currentSat].update();
+        this.sats[this.currentSat].setEllipse();
     }
 
     setArgPer() {
         this.sats[this.currentSat].w = utils.toRadians(this.inputArgPer.value);
-        this.sats[this.currentSat].update();
+        this.sats[this.currentSat].setEllipse();
     }
 
-    setPeriod() {
+    setTrueAnomaly() {
         this.sats[this.currentSat].v_0 = utils.toRadians(this.inputTrueAnomaly.value);
-        this.sats[this.currentSat].update();
+        this.sats[this.currentSat].setEllipse();
     }
 
     getRotSpeed() {
