@@ -3,24 +3,26 @@ import { Satellite } from 'sat';
 import { addToScene } from 'main';
 
 class UI {
-    title = document.createElement('div');
+    title = document.createElement('text');
     addSatButt = document.createElement('button');
     satList = document.createElement('select');
-    orbitalParams = document.createElement('div');
-    semiMajor = document.createElement('div');
-    eccentricity = document.createElement('div');
-    inclination = document.createElement('div');
-    raan = document.createElement('div');
-    argPer = document.createElement('div');
-    trueAnomaly = document.createElement('div');
+    orbitalParams = document.createElement('text');
+    semiMajor = document.createElement('text');
+    eccentricity = document.createElement('text');
+    inclination = document.createElement('text');
+    raan = document.createElement('text');
+    argPer = document.createElement('text');
+    trueAnomaly = document.createElement('text');
+    simSpeed = document.createElement('text');
 
-    inputSemiMajor = document.createElement('input')
-    inputEccentricity = document.createElement('input')
-    inputInclination = document.createElement('input')
-    inputRaan = document.createElement('input')
-    inputArgPer = document.createElement('input')
-    inputTrueAnomaly = document.createElement('input')
-
+    inputSemiMajor = document.createElement('input');
+    inputEccentricity = document.createElement('input');
+    inputInclination = document.createElement('input');
+    inputRaan = document.createElement('input');
+    inputArgPer = document.createElement('input');
+    inputTrueAnomaly = document.createElement('input');
+    inputSimSpeed = document.createElement('input');
+    
     currentSat=0;
 
     sats = [];
@@ -67,6 +69,10 @@ class UI {
         this.trueAnomaly.innerText = "True Anomaly (deg)";
         this.trueAnomaly.id = "trueAnomaly";
         document.body.appendChild(this.trueAnomaly);
+        
+        this.simSpeed.innerText = "Sim Speed (X/1s)";
+        this.simSpeed.id = "simSpeed";
+        document.body.appendChild(this.simSpeed);
 
         this.inputSemiMajor.setAttribute("type", "number");
         this.inputSemiMajor.id = "inputSemiMajor";
@@ -99,6 +105,12 @@ class UI {
         this.inputTrueAnomaly.id = "inputTrueAnomaly";
         this.inputTrueAnomaly.addEventListener( "input", () => this.setTrueAnomaly() );
         document.body.appendChild(this.inputTrueAnomaly);
+
+        this.inputSimSpeed.setAttribute("type", "number");
+        this.inputSimSpeed.id = "inputSimSpeed";
+        this.inputSimSpeed.step = 100;
+        this.inputSimSpeed.addEventListener( "input", () => this.setSimSpeed() );
+        document.body.appendChild(this.inputSimSpeed);
     }
     
     addSat() {
@@ -127,7 +139,8 @@ class UI {
         this.inputInclination.value = utils.toDegrees(this.sats[this.currentSat].i);
         this.inputRaan.value = utils.toDegrees(this.sats[this.currentSat].raan);
         this.inputArgPer.value = utils.toDegrees(this.sats[this.currentSat].w);
-        this.inputTrueAnomaly.value = utils.toDegrees(this.sats[this.currentSat].v_0);
+        this.inputTrueAnomaly.value = parseInt(utils.toDegrees(this.sats[this.currentSat].v_0));
+        this.inputSimSpeed.value = this.sats[this.currentSat].speed;
     }
 
     setSemiMajor() {
@@ -160,8 +173,8 @@ class UI {
         this.sats[this.currentSat].setEllipse();
     }
 
-    getRotSpeed() {
-        return this.rotSpeed;
+    setSimSpeed() {
+        this.sats[this.currentSat].speed = this.inputSimSpeed.value;
     }
 }
 

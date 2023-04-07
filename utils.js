@@ -1,4 +1,5 @@
 export const scale = 10000;
+export const speed = 1200;
 export const rotSpeed = 0.001;
 export const MU = 3.986 * (10**5);
 

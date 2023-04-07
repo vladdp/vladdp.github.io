@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as utils from 'utils';
 
 class Satellite {
+    speed = utils.speed;
     scale = utils.scale;
     a = 10000/this.scale;
     e = 0;
@@ -19,6 +20,11 @@ class Satellite {
     y = [];
     z = new Array(100).fill();
     theta = utils.linspace( 0, 2*Math.PI, this.resolution );
+
+    nup;
+    nx;
+    ny;
+    nr;
 
     vx = 0;
     vy = 0;
@@ -70,7 +76,7 @@ class Satellite {
         this.pos_y = this.pos_r * Math.sin( this.v_0 );
         this.pos_z = 0;
 
-        // this.updateTrueAnomaly();
+        this.updateTrueAnomaly();
         
         this.pos.push( new THREE.Vector3( this.pos_x, this.pos_y, this.pos_z ) );
         
@@ -82,28 +88,27 @@ class Satellite {
     }
     
     updateTrueAnomaly() {
-        this.vx = Math.sqrt( utils.MU / (this.p * utils.scale) ) * -Math.sin( this.v_0 );
-        this.vy = Math.sqrt( utils.MU / (this.p * utils.scale) ) * (this.e + Math.cos( this.v_0 ) );
+        this.nup = Math.sqrt( utils.MU / (this.p * utils.scale) );
+        this.vx = this.nup * -Math.sin( this.v_0 );
+        this.vy = this.nup * ( parseFloat(this.e) + Math.cos( this.v_0 ) );
 
         this.vx /= utils.scale;
         this.vy /= utils.scale;
 
-        var nx = this.pos_x + this.vx * 20;
-        var ny = this.pos_y + this.vy * 20;
+        this.nx = this.pos_x + this.vx * (this.speed / 60);
+        this.ny = this.pos_y + this.vy * (this.speed / 60);
 
-        var nr = Math.sqrt( nx**2 + ny**2 );
+        this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
 
-        var v_0x = Math.acos( nx / nr );
-        var inc = v_0x - this.v_0;
-
-        if ( inc > 0 ) {
-            this.v_0 = v_0x;
-            console.log(v_0x);
+        if ( this.ny > 0 ) {
+            this.v_0 = Math.acos( this.nx / this.nr );
         } else {
-            console.log("here", v_0x, inc);
-            this.v_0 = 2*Math.PI - v_0x;
+            this.v_0 = 2*Math.PI - Math.acos( this.nx / this.nr );
         }
+    }
 
+    setSpeed(speed) {
+        this.speed = speed;
     }
 }
 

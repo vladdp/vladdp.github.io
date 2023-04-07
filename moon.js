@@ -3,6 +3,7 @@ import { addToScene } from 'main';
 import * as utils from "utils";
 
 class Moon {
+    speed = utils.speed;
     radius = 1737 / utils.scale;
 
     a = 384399 / utils.scale;
@@ -34,11 +35,11 @@ class Moon {
         this.ellipse = new THREE.Line( this.ellipse_geometry, this.ellipse_material );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
 
-        this.draw_orbit();
-        this.set_pos();
+        this.drawOrbit();
+        this.setPos();
     }
 
-    draw_orbit() {
+    drawOrbit() {
         const theta = utils.linspace( 0, 2*Math.PI, this.resolution );
         const p = this.a * (1-Math.pow(this.e, 2));
 
@@ -58,11 +59,43 @@ class Moon {
         addToScene(this.ellipse);
     }
 
-    set_pos() {
-        this.pos.x = this.x[0];
-        this.pos.y = 0;
-        this.pos.z = 0;
-        this.shape.position.set( this.pos.x, this.pos.y, this.pos.z );
+    setPos() {
+        this.pos = [];
+        this.p = this.a * ( 1-Math.pow(this.e, 2) );
+        this.pos_r = this.p / ( 1 + this.e * Math.cos( this.v_0 ) );
+        this.pos_x = this.pos_r * Math.cos( this.v_0 );
+        this.pos_y = this.pos_r * Math.sin( this.v_0 );
+        this.pos_z = 0;
+
+        this.updateTrueAnomaly();
+        
+        this.pos.push( new THREE.Vector3( this.pos_x, this.pos_y, this.pos_z ) );
+        
+        utils.rot_z( this.pos, this.w );
+        utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
+        utils.rot_y( this.pos, this.raan );
+
+        this.shape.position.set( this.pos[0].x, this.pos[0].y, this.pos[0].z );
+    }
+    
+    updateTrueAnomaly() {
+        this.nup = Math.sqrt( utils.MU / (this.p * utils.scale) );
+        this.vx = this.nup * -Math.sin( this.v_0 );
+        this.vy = this.nup * ( parseFloat(this.e) + Math.cos( this.v_0 ) );
+
+        this.vx /= utils.scale;
+        this.vy /= utils.scale;
+
+        this.nx = this.pos_x + this.vx * (this.speed / 60);
+        this.ny = this.pos_y + this.vy * (this.speed / 60);
+
+        this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
+
+        if ( this.ny > 0 ) {
+            this.v_0 = Math.acos( this.nx / this.nr );
+        } else {
+            this.v_0 = 2*Math.PI - Math.acos( this.nx / this.nr );
+        }
     }
 }
 

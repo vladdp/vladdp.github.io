@@ -27,31 +27,6 @@ controls.update();
 scene.add(earth.shape);
 scene.add(moon.shape);
 
-// TODO: Refactor, and try to use Line3.
-// Draw Earth xyz axis
-const line_material = new THREE.LineBasicMaterial( { color: 0x00ffff});
-const lx = [];
-lx.push( new THREE.Vector3(0, 0, 0) );
-lx.push( new THREE.Vector3(1, 0, 0) );
-const ly = [];
-ly.push( new THREE.Vector3(0, 0, 0) );
-ly.push( new THREE.Vector3(0, 1, 0) );
-const lz = [];
-lz.push( new THREE.Vector3(0, 0, 0) );
-lz.push( new THREE.Vector3(0, 0, 1) );
-
-const lx_geometry = new THREE.BufferGeometry().setFromPoints( lx );
-const ly_geometry = new THREE.BufferGeometry().setFromPoints( ly );
-const lz_geometry = new THREE.BufferGeometry().setFromPoints( lz );
-
-const line_x = new THREE.Line( lx_geometry, line_material );
-const line_y = new THREE.Line( ly_geometry, line_material );
-const line_z = new THREE.Line( lz_geometry, line_material );
-
-scene.add(line_x);
-scene.add(line_y);
-scene.add(line_z);
-
 ui.addSat();
 
 export function addToScene(element) {
@@ -65,8 +40,12 @@ function animate() {
     }, 1000 / 60 );
     
     earth.shape.rotation.y += ui.rotSpeed;
-    ui.sats[0].setPos();
-    
+    moon.shape.rotation.y += 0.00001;
+    for ( let i=0; i<ui.sats.length; i++ ) {
+        ui.sats[i].setPos();
+    }
+    moon.setPos();
+
     controls.update();
 
     renderer.setSize( window.innerWidth, window.innerHeight );

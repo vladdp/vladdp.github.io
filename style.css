@@ -144,6 +144,22 @@ canvas {
     width: 100px;
 }
 
+#simSpeed {
+    position: absolute;
+    color: whitesmoke;
+    top: 410px;
+    left: 20px;
+}
+
+#inputSimSpeed {
+    position: absolute;
+    text-align: right;
+    border-radius: 8px;
+    top: 410px;
+    left: 180px;
+    width: 100px;
+}
+
 .ui {
     position: absolute;
 }
