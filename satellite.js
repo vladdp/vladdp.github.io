@@ -18,7 +18,7 @@ class Satellite {
     r = [];
     x = [];
     y = [];
-    z = new Array(100).fill();
+    z = new Array(this.resolution).fill();
     theta = utils.linspace( 0, 2*Math.PI, this.resolution );
 
     nup;
