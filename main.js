@@ -27,22 +27,15 @@ const controls = new OrbitControls( camera, renderer.domElement );
 controls.enablePan = false;
 controls.update();
 
-const sunData = data.Sun;
-const sun = new CelestialBody(sunData);
+const bodies = {
+    "Sun": new CelestialBody(data.Sun),
+    "Earth": new CelestialBody(data.Planet.Earth),
+    "Mercury": new CelestialBody(data.Planet.Mercury),
+    "Venus": new CelestialBody(data.Planet.Venus),
+    "Mars": new CelestialBody(data.Planet.Mars),
+}
 
-const earthData = data.Planet.Earth;
-const earth = new CelestialBody(earthData);
-
-const mercuryData = data.Planet.Mercury;
-const mercury = new CelestialBody(mercuryData);
-
-const venusData = data.Planet.Venus;
-const venus = new CelestialBody(venusData);
-
-const marsData = data.Planet.Mars;
-const mars = new CelestialBody(marsData);
-
-setFocus(earth.shape.position)
+setFocus("Earth")
 
 const moon = new Moon();
 
@@ -58,9 +51,12 @@ export function addFocus( object ) {
     ui.addFocus(object);
 }
 
-export function setFocus( position ) {
-    controls.object.position.set( position.x + 1, position.y + 1, position.z + 1 );
-    controls.target = position;
+export function setFocus( body ) {
+    console.log(body);
+    controls.object.position.set( bodies[body].shape.position.x + 1, 
+                                  bodies[body].shape.position.y + 1, 
+                                  bodies[body].shape.position.z + 1 );
+    controls.target = bodies[body].shape.position;
 }
 
 function animate() {
@@ -69,8 +65,8 @@ function animate() {
         requestAnimationFrame(animate);
     }, 1000 / 60 );
     
-    sun.shape.rotation.y += 0.0001;
-    earth.shape.rotation.y += ui.rotSpeed; // why am I using ui.rotSpeed?
+    bodies["Sun"].shape.rotation.y += 0.0001;
+    bodies["Earth"].shape.rotation.y += ui.rotSpeed; // why am I using ui.rotSpeed?
     moon.shape.rotation.y += 0.00001;
 
     for ( let i=0; i<ui.sats.length; i++ ) {

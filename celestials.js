@@ -21,6 +21,7 @@ class CelestialBody {
 
         this.option = document.createElement('option');
         this.option.text = data.name;
+        this.option.value = data.name;
 
         this.shape = new THREE.Mesh(
             new THREE.SphereGeometry( this.radius, 64, 64 ),

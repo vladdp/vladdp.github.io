@@ -149,7 +149,7 @@ class UI {
 
     changeFocus() {
         console.log( this.focusList.value );
-        // main.setFocus( this.focusList.value );
+        main.setFocus( this.focusList.value );
     }
 
     update() {
