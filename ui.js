@@ -1,6 +1,6 @@
 import * as utils from 'utils';
 import { Satellite } from 'sat';
-import { addToScene } from 'main';
+import * as main from 'main';
 
 class UI {
     title = document.createElement('text');
@@ -14,6 +14,8 @@ class UI {
     argPer = document.createElement('text');
     trueAnomaly = document.createElement('text');
     simSpeed = document.createElement('text');
+    focus = document.createElement('text');
+    focusList = document.createElement('select');
 
     inputSemiMajor = document.createElement('input');
     inputEccentricity = document.createElement('input');
@@ -74,6 +76,14 @@ class UI {
         this.simSpeed.id = "simSpeed";
         document.body.appendChild(this.simSpeed);
 
+        this.focus.innerText = "Focus";
+        this.focus.id = "focus";
+        document.body.appendChild(this.focus);
+
+        this.focusList.id = 'focusList';
+        this.focusList.addEventListener( "change", () => this.changeFocus() );
+        document.body.appendChild(this.focusList);
+
         this.inputSemiMajor.setAttribute("type", "number");
         this.inputSemiMajor.id = "inputSemiMajor";
         this.inputSemiMajor.step = 100;
@@ -123,14 +133,23 @@ class UI {
         
         this.update();
         this.sats[this.currentSat].setEllipse();
-        addToScene( this.sats[this.currentSat].cube );
-        addToScene( this.sats[this.currentSat].ellipse );
+        main.addToScene( this.sats[this.currentSat].cube );
+        main.addToScene( this.sats[this.currentSat].ellipse );
     }
 
     changeSat() {
         this.currentSat = this.satList.selectedIndex;
 
         this.update();
+    }
+
+    addFocus( object ) {
+        this.focusList.add( object );
+    }
+
+    changeFocus() {
+        console.log( this.focusList.value );
+        // main.setFocus( this.focusList.value );
     }
 
     update() {

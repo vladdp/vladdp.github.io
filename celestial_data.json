@@ -1,0 +1,80 @@
+{
+    "Sun":
+    
+     {
+        "name": "Sun",
+        "parent": null,
+        "texture": "assets/sun.jpg",
+
+        "radius": 696342
+     },
+
+    "Planet": {
+        
+        "Mercury": {
+            "name": "Mercury",
+            "parent": "Sun",
+            "texture": "assets/mercury.jpg",
+            "color": "gray",
+
+            "radius": 2440,
+            "a": 57909050,
+            "e": 0.2056,
+            "i": 7.01,
+            "loan": 48.331,
+            "argperi": 29.124
+        },
+
+        "Venus": {
+            "name": "Venus",
+            "parent": "Sun",
+            "texture": "assets/venus.jpg",
+            "color": "sandybrown",
+
+            "radius": 6052,
+            "a": 108939000,
+            "e": 0.006772,
+            "i": 3.39,
+            "loan": 76.680,
+            "argperi": 54.884
+        },
+
+        "Earth": {
+            "name": "Earth",
+            "parent": "Sun",
+            "texture": "assets/earth.jpg",
+            "color": "royalblue",
+
+            "radius": 6371,
+            "a": 149598023,
+            "e": 0.01670,
+            "i": 0,
+            "loan": -11.260,
+            "argperi": 114.207
+        },
+
+        "Mars": {
+            "name": "Mars",
+            "parent": "Sun",
+            "texture": "assets/mars.jpg",
+            "color": "orangered",
+
+            "radius": 3390,
+            "a": 227939366,
+            "e": 0.0934,
+            "i": 1.85,
+            "loan": 49.578,
+            "argperi": 286.5
+        }
+        
+    },
+
+    "Moon": {
+
+        "Moon": {
+            "parent": "Earth"
+        }
+
+    }
+
+}

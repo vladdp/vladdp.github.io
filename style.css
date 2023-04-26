@@ -39,6 +39,21 @@ canvas {
     width: 100px;
 }
 
+#focus {
+    position: absolute;
+    color: whitesmoke;
+    top: 160px;
+    left: 20px;
+}
+
+#focusList {
+    position: absolute;
+    border-radius: 8px;
+    top: 160px;
+    left: 80px;
+    width: 100px;
+}
+
 #orbParams {
     position: absolute;
     color: whitesmoke;

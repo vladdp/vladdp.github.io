@@ -4,8 +4,8 @@ export const rotSpeed = 0.001;
 export const MU = 3.986 * (10**5);
 
 export const colors = [
-    0xFF5733, // orange-red
-    0xFFC300, // yellow
+    'gold',
+    'silver', // yellow
     0xDAF7A6, // pastel green
     0x2AF3EB, // cyan
     0xF32AF3, // light purple
