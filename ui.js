@@ -16,7 +16,7 @@ class UI {
     simSpeed = document.createElement('text');
     focus = document.createElement('text');
     focusList = document.createElement('select');
-
+    
     inputSemiMajor = document.createElement('input');
     inputEccentricity = document.createElement('input');
     inputInclination = document.createElement('input');
@@ -25,6 +25,9 @@ class UI {
     inputTrueAnomaly = document.createElement('input');
     inputSimSpeed = document.createElement('input');
     
+    date = new Date();
+    ui_date = document.createElement('text');
+
     currentSat=0;
 
     sats = [];
@@ -121,6 +124,10 @@ class UI {
         this.inputSimSpeed.step = 100;
         this.inputSimSpeed.addEventListener( "input", () => this.setSimSpeed() );
         document.body.appendChild(this.inputSimSpeed);
+
+        this.ui_date.innerText = this.date.toUTCString();
+        this.ui_date.id = "ui_date";
+        document.body.appendChild( this.ui_date );
     }
     
     addSat() {
@@ -148,8 +155,12 @@ class UI {
     }
 
     changeFocus() {
-        console.log( this.focusList.value );
         main.setFocus( this.focusList.value );
+    }
+
+    updateDate( inc ) {
+        this.date.setMilliseconds( this.date.getMilliseconds() + inc );
+        this.ui_date.innerText = this.date.toUTCString();
     }
 
     update() {

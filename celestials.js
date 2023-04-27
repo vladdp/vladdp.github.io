@@ -9,11 +9,12 @@ class CelestialBody {
 
     constructor(data) {
         this.radius = data.radius / utils.scale;
-        this.a = data.a / utils.scale;
+        this.a = (data.a * utils.AU) / utils.scale;
         this.e = data.e;
         this.i = utils.toRadians( data.i );
         this.loan = utils.toRadians( data.loan );
         this.argperi = utils.toRadians( data.argperi );
+        this.rotationAngle = 2 * Math.PI / data.rotationPeriod;
 
         this.parent = data.parent;
         this.texture = data.texture;
@@ -23,10 +24,10 @@ class CelestialBody {
         this.option.text = data.name;
         this.option.value = data.name;
 
-        this.shape = new THREE.Mesh(
+        this.sphere = new THREE.Mesh(
             new THREE.SphereGeometry( this.radius, 64, 64 ),
             new THREE.MeshBasicMaterial({
-            map: new THREE.TextureLoader().load( this.texture ),
+                map: new THREE.TextureLoader().load( this.texture ),
             })
         );
 
@@ -36,7 +37,7 @@ class CelestialBody {
         }
 
         main.addFocus(this.option);
-        main.addToScene(this.shape);
+        main.addToScene(this.sphere);
     }
 
     drawOrbit() {
@@ -83,13 +84,11 @@ class CelestialBody {
         utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
         utils.rot_y( this.pos, this.loan );
 
-        this.shape.position.set( this.pos[0].x, this.pos[0].y, this.pos[0].z );
-
-        // main.setFocus( this.shape );
+        this.sphere.position.set( this.pos[0].x, this.pos[0].y, this.pos[0].z );
     }
 
     update() {
-
+        this.sphere.rotation.y += this.rotationAngle * 100;
     }
 }
 

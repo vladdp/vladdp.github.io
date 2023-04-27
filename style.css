@@ -175,6 +175,16 @@ canvas {
     width: 100px;
 }
 
+#ui_date {
+    position: absolute;
+    color: whitesmoke;
+    bottom: 20px;
+    left: 20px;
+
+    user-select: none;
+}
+
+
 .ui {
     position: absolute;
 }

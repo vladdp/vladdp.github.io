@@ -5,15 +5,20 @@ import { CelestialBody } from 'celestials';
 import data from 'celestial_data' assert { type: 'json'};
 import { Moon } from 'moon';
 import { UI } from 'ui';
+import * as utils from 'utils';
 
 
-var currentTime = new Date();
-console.log(currentTime);
+var date = new Date();
+var T = utils.getT( date );
+console.log(date.toString());
+console.log(date.getTime());
+console.log( T );
+
 
 const scene = new THREE.Scene();
 const ui = new UI();
 
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(1, 1, 1);
 
 const renderer = new THREE.WebGLRenderer({
@@ -33,15 +38,26 @@ const bodies = {
     "Mercury": new CelestialBody(data.Planet.Mercury),
     "Venus": new CelestialBody(data.Planet.Venus),
     "Mars": new CelestialBody(data.Planet.Mars),
-}
+    "Jupiter": new CelestialBody(data.Planet.Jupiter),
+};
 
-setFocus("Earth")
+setFocus("Earth");
+ui.focusList.value = "Earth";
 
 const moon = new Moon();
 
 scene.add(moon.shape);
 
 ui.addSat();
+
+const earth = new THREE.Mesh(
+    new THREE.SphereGeometry( 6371 / utils.scale, 64, 64 ),
+    new THREE.MeshBasicMaterial({
+        map: new THREE.TextureLoader().load( "assets/earth.jpg" ),
+    })
+);
+
+scene.add( earth );
 
 export function addToScene( element ) {
     scene.add(element);
@@ -52,35 +68,39 @@ export function addFocus( object ) {
 }
 
 export function setFocus( body ) {
-    console.log(body);
-    controls.object.position.set( bodies[body].shape.position.x + 1, 
-                                  bodies[body].shape.position.y + 1, 
-                                  bodies[body].shape.position.z + 1 );
-    controls.target = bodies[body].shape.position;
+    controls.object.position.set( bodies[body].sphere.position.x + 2 * bodies[body].radius, 
+                                  bodies[body].sphere.position.y + 2 * bodies[body].radius, 
+                                  bodies[body].sphere.position.z + 2 * bodies[body].radius );
+    controls.target = bodies[body].sphere.position;
+    controls.update();
 }
+
+const fps = 60;
 
 function animate() {
 
-    setTimeout( function() {
-        requestAnimationFrame(animate);
-    }, 1000 / 60 );
+    requestAnimationFrame(animate);
+
+    ui.updateDate( 1000 / fps );
+    bodies["Earth"].update();
     
-    bodies["Sun"].shape.rotation.y += 0.0001;
-    bodies["Earth"].shape.rotation.y += ui.rotSpeed; // why am I using ui.rotSpeed?
-    moon.shape.rotation.y += 0.00001;
+    // bodies["Sun"].shape.rotation.y += 0.0001;
+    // bodies["Earth"].sphere.rotation.y += 0.1;
+    // moon.shape.rotation.y += 0.00001;
 
-    for ( let i=0; i<ui.sats.length; i++ ) {
-        ui.sats[i].setPos();
-    }
-    moon.setPos();
-
-    controls.update();
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    // for ( let i=0; i<ui.sats.length; i++ ) {
+    //     ui.sats[i].setPos();
+    // }
+    // moon.setPos();    
 
     renderer.render(scene, camera);
 }
 
+function resize() {
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+}
+
+window.onresize = resize;
 animate();
