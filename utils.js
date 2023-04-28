@@ -6,7 +6,7 @@ export const MU = 3.986 * (10**5);
 
 export const colors = [
     'gold',
-    'silver', // yellow
+    'silver', 
     0xDAF7A6, // pastel green
     0x2AF3EB, // cyan
     0xF32AF3, // light purple
@@ -92,8 +92,8 @@ export function getT( date ) {
     const D = date.getUTCDate();
 
     const JDN = Math.floor( ( 1461 * ( Y + 4800 + Math.floor( (M-14)/12 ) ) ) / 4 ) +
-           Math.floor( ( 367 * (M - 2 - 12 * ( Math.floor( (M-14)/12) ) ) ) / 12 ) -
-           Math.floor( ( 3 * ( ( Y + 4900 + Math.floor( Math.floor( (M-14)/12 ) / 100 ) ) ) ) / 4 ) +
+           Math.floor( ( 367 * (M - 2 - 12 * Math.floor( (M-14)/12 ) ) ) / 12 ) -
+           Math.floor( ( 3 * Math.floor( Y + 4900 + Math.floor( (M-14)/12 ) ) / 100 ) / 4 ) +
            D - 32075;
 
     return ( JDN - 2451545.0 ) / 36525;

@@ -32,6 +32,8 @@ class UI {
 
     sats = [];
     rotSpeed = utils.rotSpeed;
+
+    T = utils.getT( new Date() );
     
     constructor() {
         this.title.innerText = "ThreeJSat";
@@ -161,6 +163,7 @@ class UI {
     updateDate( inc ) {
         this.date.setMilliseconds( this.date.getMilliseconds() + inc );
         this.ui_date.innerText = this.date.toUTCString();
+        // console.log( this.date.getMilliseconds() )
     }
 
     update() {
