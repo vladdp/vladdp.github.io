@@ -11,12 +11,14 @@ class CelestialBody {
         this.T = main.getT();
         this.parent = data.parent;
         this.type = data.type;
+        this.name = data.name;
+        this.data = data;
 
         if ( this.parent != null ) {
             this.parentPos = main.getBodyPosition( this.parent );
         }
         
-        if (this.parent != null && this.type != "Moon") {
+        if ( this.type == "Planet" ) {
             this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
             this.e = data.e + data.de * this.T;
             this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
@@ -148,6 +150,37 @@ class CelestialBody {
 
     update() {
         this.sphere.rotation.y += this.rotationAngle * 100;
+
+        if ( this.type == "Planet" ) {
+            this.T = main.getT();
+            this.updateElements( this.data );
+            this.setPos();
+        }
+
+        if ( this.name == "Earth" ) {
+            // console.log(this.sphere.position);
+        }
+
+        if ( this.type == "Moon") {
+            // this.drawOrbit();
+            this.setPos();
+        }
+    }
+
+    updateElements( data ) {
+        this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
+        this.e = data.e + data.de * this.T;
+        this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
+        this.L = ( utils.toRadians( data.L ) + utils.toRadians( data.dL ) * this.T ) % (2*Math.PI);
+        this.lop = ( utils.toRadians( data.lop ) + utils.toRadians( data.dlop ) * this.T ) % (2*Math.PI);
+        this.loan = utils.toRadians( data.loan ) + utils.toRadians( data.dloan ) * this.T;
+        this.argperi = this.lop - this.loan;
+        this.M = this.L - this.lop;
+        if ( this.M > Math.PI ) this.M -= 2*Math.PI;
+        if ( this.M < -Math.PI ) this.M += 2*Math.PI;
+
+        this.calculateE();
+        this.calculateTrueAnomaly();
     }
 }
 

@@ -10,6 +10,7 @@ import * as utils from 'utils';
 var date = new Date();
 var T = utils.getT( date );
 console.log(date.toString());
+console.log(date.getMilliseconds());
 console.log( "T:", T );
 
 const scene = new THREE.Scene();
@@ -27,23 +28,24 @@ document.body.appendChild( renderer.domElement );
 
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.enablePan = false;
+controls.enableDamping = true;
 controls.update();
 
 var bodies = {};
 bodies["Sun"] = new CelestialBody(data.Sun);
 bodies["Earth"] = new CelestialBody(data.Planet.Earth);
-bodies["Moon"] = new CelestialBody(data.Moon.Moon);
 bodies["Mercury"] = new CelestialBody(data.Planet.Mercury);
 bodies["Venus"] = new CelestialBody(data.Planet.Venus);
 bodies["Mars"] = new CelestialBody(data.Planet.Mars);
 bodies["Jupiter"] = new CelestialBody(data.Planet.Jupiter);
-
-console.log(bodies["Moon"].radius);
+bodies["Moon"] = new CelestialBody(data.Moon.Moon);
+bodies["Ganymede"] = new CelestialBody(data.Moon.Ganymede);
 
 setFocus("Earth");
 ui.focusList.value = "Earth";
+// console.log(ui.focusList.value);
 
-bodies["Earth"].ellipse.visible = false;
+// bodies["Earth"].ellipse.visible = false;
 
 ui.addSat();
 
@@ -63,6 +65,10 @@ export function setFocus( body ) {
     controls.update();
 }
 
+export function getFocus() {
+    return ui.focusList.value;
+}
+
 export function getT() {
     return ui.T;
 }
@@ -71,33 +77,48 @@ export function getBodyPosition( body ) {
     return bodies[body].sphere.position;
 }
 
-const fps = 60;
-const fpsInterval = 1000 / fps;
-var then = performance.now();
-var now, elapsed;
+const fpsInterval = 1000 / 60;
+var now, then = performance.now();
+var fps, oldTimeStamp=0, secondsPassed, elapsed, inc;
+let bodyPos0, bodyPos1, dbodyPos = new THREE.Vector3();
 
-function animate() {
+function animate( timeStamp ) {
 
     requestAnimationFrame(animate);
 
     now = performance.now();
-    elapsed = now - then;
-    // console.log(elapsed);
+    elapsed = timeStamp - then;
 
-    if ( elapsed > fpsInterval ) {
-        then = now - ( elapsed % fpsInterval );
-
-        ui.updateDate( elapsed );
+    secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+    
+    fps = Math.round( 1 / secondsPassed );
+    
+    if ( elapsed >= fpsInterval ) {
+        then = timeStamp - ( elapsed % fpsInterval );
+        bodyPos0 = bodies[ui.focusList.value].sphere.position.clone();
+        
+        ui.updateFPS( fps );
+        ui.updateDate( (performance.now() - oldTimeStamp) * 100 );
         
         for (var body in bodies) {
             bodies[body].update();
         }
-    
-        for ( let i=0; i<ui.sats.length; i++ ) {
-            ui.sats[i].setPos();
+        
+        bodyPos1 = bodies[ui.focusList.value].sphere.position.clone();
+        dbodyPos.copy(bodyPos1.sub(bodyPos0));
+        
+        for ( let i=0; i < ui.sats.length; i++ ) {
+            ui.sats[i].update();
         }
-
+        
+        oldTimeStamp = timeStamp;
+        
+        controls.object.position.add(dbodyPos);
+        controls.update();
+        
         renderer.render(scene, camera);
+    } else {
+        console.log("slow");
     }
 }
 

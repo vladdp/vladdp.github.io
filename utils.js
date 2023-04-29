@@ -96,5 +96,8 @@ export function getT( date ) {
            Math.floor( ( 3 * Math.floor( Y + 4900 + Math.floor( (M-14)/12 ) ) / 100 ) / 4 ) +
            D - 32075;
 
-    return ( JDN - 2451545.0 ) / 36525;
+    const JD = JDN + date.getHours() / 24 + date.getMinutes() / 1440
+                   + date.getSeconds() / 86400 + date.getMilliseconds() / 86400000;
+
+    return ( JD - 2451545.0 ) / 36525;
 }

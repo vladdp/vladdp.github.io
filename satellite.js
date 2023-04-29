@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+
+import * as main from 'main';
 import * as utils from 'utils';
 
 class Satellite {
@@ -12,7 +14,7 @@ class Satellite {
     v_0 = 0;
     p;
     
-    points = [];
+    ellipsePoints = [];
     resolution = 1000;
 
     r = [];
@@ -39,33 +41,40 @@ class Satellite {
         this.option = document.createElement('option');
         this.option.text = this.name;
 
+        this.parent = main.getFocus();
+        this.parentPos = main.getBodyPosition( this.parent );
+
         this.geometry = new THREE.BoxGeometry( this.width, this.height, this.depth );
         this.material = new THREE.MeshBasicMaterial( {color: color} );
         this.material.wireframe = true;
         this.cube = new THREE.Mesh( this.geometry, this.material );
 
-        this.ellipse_geometry = new THREE.BufferGeometry().setFromPoints(this.points);
-        this.ellipse_material = new THREE.LineBasicMaterial( { color: color } );
-        this.ellipse = new THREE.Line( this.ellipse_geometry, this.ellipse_material );
+        this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
+        this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
+        this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
     }
 
-    setEllipse() {
-        this.points = [];
+    drawOrbit() {
+        this.ellipsePoints = [];
         this.p = this.a * (1-Math.pow(this.e, 2));
 
         for (var i=0; i < this.resolution; i++) {
             this.r[i] = this.p / ( 1 + this.e * Math.cos(this.theta[i]) );
             this.x[i] = this.r[i] * Math.cos(this.theta[i]);
             this.y[i] = this.r[i] * Math.sin(this.theta[i]);
-            this.points.push( new THREE.Vector3( this.x[i], this.y[i], this.z[i] ));
+            this.ellipsePoints.push( new THREE.Vector3( this.x[i], this.y[i], this.z[i] ));
         }
         
-        utils.rot_z( this.points, this.w );
-        utils.rot_x( this.points, -(Math.PI / 2) + this.i );
-        utils.rot_y( this.points, this.raan );
+        utils.rot_z( this.ellipsePoints, this.w );
+        utils.rot_x( this.ellipsePoints, -(Math.PI / 2) + this.i );
+        utils.rot_y( this.ellipsePoints, this.raan );
 
-        this.ellipse_geometry.setFromPoints( this.points );
+        for (let i = 0; i < this.ellipsePoints.length; i++) {
+            this.ellipsePoints[i].add(this.parentPos);
+        }
+
+        this.ellipseGeometry.setFromPoints( this.ellipsePoints );
     }
 
     setPos() {
@@ -84,7 +93,9 @@ class Satellite {
         utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
         utils.rot_y( this.pos, this.raan );
 
-        this.cube.position.set( this.pos[0].x, this.pos[0].y, this.pos[0].z );
+        this.cube.position.set( this.parentPos.x + this.pos[0].x, 
+                                this.parentPos.y + this.pos[0].y,
+                                this.parentPos.z + this.pos[0].z );
     }
     
     updateTrueAnomaly() {
@@ -105,6 +116,11 @@ class Satellite {
         } else {
             this.v_0 = 2*Math.PI - Math.acos( this.nx / this.nr );
         }
+    }
+
+    update() {
+        this.drawOrbit();
+        this.setPos();
     }
 
     setSpeed(speed) {

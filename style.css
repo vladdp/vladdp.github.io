@@ -143,36 +143,11 @@ canvas {
     width: 100px;
 }
 
-#trueAnomaly {
-    position: absolute;
-    color: whitesmoke;
-    top: 380px;
-    left: 20px;
-}
-
-#inputTrueAnomaly {
-    position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 380px;
-    left: 180px;
-    width: 100px;
-}
-
 #simSpeed {
     position: absolute;
     color: whitesmoke;
-    top: 410px;
+    bottom: 50px;
     left: 20px;
-}
-
-#inputSimSpeed {
-    position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 410px;
-    left: 180px;
-    width: 100px;
 }
 
 #ui_date {
@@ -184,6 +159,14 @@ canvas {
     user-select: none;
 }
 
+#fps {
+    position: absolute;
+    color: whitesmoke;
+    bottom: 20px;
+    right: 60px;
+
+    user-select: none;
+}
 
 .ui {
     position: absolute;

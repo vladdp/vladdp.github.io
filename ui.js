@@ -12,7 +12,6 @@ class UI {
     inclination = document.createElement('text');
     raan = document.createElement('text');
     argPer = document.createElement('text');
-    trueAnomaly = document.createElement('text');
     simSpeed = document.createElement('text');
     focus = document.createElement('text');
     focusList = document.createElement('select');
@@ -22,9 +21,8 @@ class UI {
     inputInclination = document.createElement('input');
     inputRaan = document.createElement('input');
     inputArgPer = document.createElement('input');
-    inputTrueAnomaly = document.createElement('input');
-    inputSimSpeed = document.createElement('input');
     
+    fps = document.createElement('text');
     date = new Date();
     ui_date = document.createElement('text');
 
@@ -33,7 +31,7 @@ class UI {
     sats = [];
     rotSpeed = utils.rotSpeed;
 
-    T = utils.getT( new Date() );
+    T = utils.getT( this.date );
     
     constructor() {
         this.title.innerText = "ThreeJSat";
@@ -72,12 +70,8 @@ class UI {
         this.argPer.innerText = "Arg of Perigee (deg)";
         this.argPer.id = "argPer";
         document.body.appendChild(this.argPer);
-
-        this.trueAnomaly.innerText = "True Anomaly (deg)";
-        this.trueAnomaly.id = "trueAnomaly";
-        document.body.appendChild(this.trueAnomaly);
         
-        this.simSpeed.innerText = "Sim Speed (X/1s)";
+        this.simSpeed.innerText = "Sim Speed: x";
         this.simSpeed.id = "simSpeed";
         document.body.appendChild(this.simSpeed);
 
@@ -116,20 +110,13 @@ class UI {
         this.inputArgPer.addEventListener( "input", () => this.setArgPer() );
         document.body.appendChild(this.inputArgPer);
 
-        this.inputTrueAnomaly.setAttribute("type", "number");
-        this.inputTrueAnomaly.id = "inputTrueAnomaly";
-        this.inputTrueAnomaly.addEventListener( "input", () => this.setTrueAnomaly() );
-        document.body.appendChild(this.inputTrueAnomaly);
-
-        this.inputSimSpeed.setAttribute("type", "number");
-        this.inputSimSpeed.id = "inputSimSpeed";
-        this.inputSimSpeed.step = 100;
-        this.inputSimSpeed.addEventListener( "input", () => this.setSimSpeed() );
-        document.body.appendChild(this.inputSimSpeed);
-
         this.ui_date.innerText = this.date.toUTCString();
         this.ui_date.id = "ui_date";
         document.body.appendChild( this.ui_date );
+
+        this.fps.innerText = "FPS: ";
+        this.fps.id = "fps";
+        document.body.appendChild( this.fps );
     }
     
     addSat() {
@@ -141,7 +128,7 @@ class UI {
         this.satList.selectedIndex = this.currentSat;
         
         this.update();
-        this.sats[this.currentSat].setEllipse();
+        this.sats[this.currentSat].drawOrbit();
         main.addToScene( this.sats[this.currentSat].cube );
         main.addToScene( this.sats[this.currentSat].ellipse );
     }
@@ -163,7 +150,12 @@ class UI {
     updateDate( inc ) {
         this.date.setMilliseconds( this.date.getMilliseconds() + inc );
         this.ui_date.innerText = this.date.toUTCString();
-        // console.log( this.date.getMilliseconds() )
+
+        this.T = utils.getT( this.date );
+    }
+
+    updateFPS( fps ) {
+        this.fps.innerText = "FPS: " + fps.toString();
     }
 
     update() {
@@ -172,43 +164,33 @@ class UI {
         this.inputInclination.value = utils.toDegrees(this.sats[this.currentSat].i);
         this.inputRaan.value = utils.toDegrees(this.sats[this.currentSat].raan);
         this.inputArgPer.value = utils.toDegrees(this.sats[this.currentSat].w);
-        this.inputTrueAnomaly.value = parseInt(utils.toDegrees(this.sats[this.currentSat].v_0));
-        this.inputSimSpeed.value = this.sats[this.currentSat].speed;
     }
 
     setSemiMajor() {
         this.sats[this.currentSat].a = this.inputSemiMajor.value / utils.scale;
-        this.sats[this.currentSat].setEllipse();
+        this.sats[this.currentSat].drawOrbit();
     }
 
     setEccentricity() {
         this.sats[this.currentSat].e = this.inputEccentricity.value;
-        this.sats[this.currentSat].setEllipse();
+        this.sats[this.currentSat].drawOrbit();
     }
 
     setInclination() {
         this.sats[this.currentSat].i = utils.toRadians(this.inputInclination.value);
-        this.sats[this.currentSat].setEllipse();
+        this.sats[this.currentSat].drawOrbit();
     }
 
     setRaan() {
         this.sats[this.currentSat].raan = utils.toRadians(this.inputRaan.value);
-        this.sats[this.currentSat].setEllipse();
+        this.sats[this.currentSat].drawOrbit();
     }
 
     setArgPer() {
         this.sats[this.currentSat].w = utils.toRadians(this.inputArgPer.value);
-        this.sats[this.currentSat].setEllipse();
+        this.sats[this.currentSat].drawOrbit();
     }
 
-    setTrueAnomaly() {
-        this.sats[this.currentSat].v_0 = utils.toRadians(this.inputTrueAnomaly.value);
-        this.sats[this.currentSat].setEllipse();
-    }
-
-    setSimSpeed() {
-        this.sats[this.currentSat].speed = this.inputSimSpeed.value;
-    }
 }
 
 export { UI };
