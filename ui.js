@@ -152,6 +152,7 @@ class UI {
         this.ui_date.innerText = this.date.toUTCString();
 
         this.T = utils.getT( this.date );
+        // console.log(this.T);
     }
 
     updateFPS( fps ) {

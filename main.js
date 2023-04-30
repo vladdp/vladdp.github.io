@@ -59,9 +59,10 @@ export function addFocus( object ) {
 
 export function setFocus( body ) {
     controls.object.position.set( bodies[body].sphere.position.x + 2 * bodies[body].radius, 
-                                  bodies[body].sphere.position.y + 2 * bodies[body].radius, 
-                                  bodies[body].sphere.position.z + 2 * bodies[body].radius );
+                                    bodies[body].sphere.position.y + 2 * bodies[body].radius, 
+                                    bodies[body].sphere.position.z + 2 * bodies[body].radius );
     controls.target = bodies[body].sphere.position;
+
     controls.update();
 }
 
@@ -98,18 +99,18 @@ function animate( timeStamp ) {
         bodyPos0 = bodies[ui.focusList.value].sphere.position.clone();
         
         ui.updateFPS( fps );
-        ui.updateDate( (performance.now() - oldTimeStamp) * 100 );
+        ui.updateDate( (performance.now() - oldTimeStamp) * 500000 );
         
         for (var body in bodies) {
             bodies[body].update();
         }
-        
-        bodyPos1 = bodies[ui.focusList.value].sphere.position.clone();
-        dbodyPos.copy(bodyPos1.sub(bodyPos0));
-        
+
         for ( let i=0; i < ui.sats.length; i++ ) {
             ui.sats[i].update();
         }
+        
+        bodyPos1 = bodies[ui.focusList.value].sphere.position.clone();
+        dbodyPos.copy(bodyPos1.sub(bodyPos0).clone());
         
         oldTimeStamp = timeStamp;
         

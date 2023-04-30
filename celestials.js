@@ -19,19 +19,7 @@ class CelestialBody {
         }
         
         if ( this.type == "Planet" ) {
-            this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
-            this.e = data.e + data.de * this.T;
-            this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
-            this.L = ( utils.toRadians( data.L ) + utils.toRadians( data.dL ) * this.T ) % (2*Math.PI);
-            this.lop = ( utils.toRadians( data.lop ) + utils.toRadians( data.dlop ) * this.T ) % (2*Math.PI);
-            this.loan = utils.toRadians( data.loan ) + utils.toRadians( data.dloan ) * this.T;
-            this.argperi = this.lop - this.loan;
-            this.M = this.L - this.lop;
-            if ( this.M > Math.PI ) this.M -= 2*Math.PI;
-            if ( this.M < -Math.PI ) this.M += 2*Math.PI;
-
-            this.calculateE();
-            this.calculateTrueAnomaly();
+            this.updateElements( this.data );
         } 
 
         if ( this.type == "Moon" ) {
@@ -63,6 +51,14 @@ class CelestialBody {
         );
 
         if (this.parent != null) {
+            this.ellipsePoints = [];
+            this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
+            this.ellipse = new THREE.Line(
+                this.ellipseGeometry,
+                new THREE.LineBasicMaterial( { color: this.color } )
+            );
+            this.ellipse.geometry.attributes.position.needsUpdate = true;
+
             this.drawOrbit();
             this.setPos();
         }
@@ -73,16 +69,17 @@ class CelestialBody {
 
     calculateE() {
         const tol = 10 ** -6;
-        const eStar = ( 180/Math.PI ) * this.e;
+        // const eStar = ( 180 / Math.PI ) * this.e;
 
-        var E = this.M - eStar * Math.sin( this.M );
-        var dM = this.M - ( E - eStar * Math.sin(E) );
-        var dE = dM / ( 1 - this.e * Math.cos(E) );
+        var E = this.M - this.e * Math.sin( this.M );
+
+        var dM = E - this.e * Math.sin(E) - this.M;
+        var dE = E - ( dM / ( 1 - this.e * Math.cos(E) ) );
         E += dE;
 
-        while ( Math.abs(dE) < tol ) {
-            dM = this.M - ( E - eStar * Math.sin(E) );
-            dE = dM / ( 1 - this.e * Math.cos(E) );
+        while ( Math.abs(dE) <= tol ) {
+            dM = E - this.e * Math.sin(E) - this.M;
+            dE = E - ( dM / ( 1 - this.e * Math.cos(E) ) );
             E += dE;
         }
 
@@ -97,7 +94,7 @@ class CelestialBody {
 
     drawOrbit() {
         const ellipseResolution = 1000;
-        var ellipsePoints = [];
+        this.ellipsePoints = [];
 
         const theta = utils.linspace( 0, 2*Math.PI, ellipseResolution );
         const p = this.a * ( 1 - Math.pow( this.e, 2 ) );
@@ -111,20 +108,18 @@ class CelestialBody {
             r[i] = p / ( 1 + this.e * Math.cos(theta[i]) );
             x[i] = r[i] * Math.cos( theta[i] );
             y[i] = r[i] * Math.sin( theta[i] );
-            ellipsePoints.push( new THREE.Vector3( x[i], y[i], z[i] ) );
+            this.ellipsePoints.push( new THREE.Vector3( x[i], y[i], z[i] ) );
         }
 
-        utils.rot_z( ellipsePoints, this.argperi );
-        utils.rot_x( ellipsePoints, -(Math.PI / 2) + this.i );
-        utils.rot_y( ellipsePoints, this.loan );
+        utils.rot_z( this.ellipsePoints, this.argperi );
+        utils.rot_x( this.ellipsePoints, -(Math.PI / 2) + this.i );
+        utils.rot_y( this.ellipsePoints, this.loan );
 
-        for (let i = 0; i < ellipsePoints.length; i++) {
-            ellipsePoints[i].add(this.parentPos);
+        for (let i = 0; i < this.ellipsePoints.length; i++) {
+            this.ellipsePoints[i].add(this.parentPos);
         }
 
-        const ellipseGeometry = new THREE.BufferGeometry().setFromPoints(ellipsePoints);
-        const ellipseMaterial = new THREE.LineBasicMaterial( { color: this.color } );
-        this.ellipse = new THREE.Line( ellipseGeometry, ellipseMaterial );
+        this.ellipseGeometry.setFromPoints( this.ellipsePoints );
 
         main.addToScene(this.ellipse);
     }
@@ -148,7 +143,7 @@ class CelestialBody {
                                   this.parentPos.z + this.pos[0].z );
     }
 
-    update() {
+    update( dPos ) {
         this.sphere.rotation.y += this.rotationAngle * 100;
 
         if ( this.type == "Planet" ) {
@@ -157,12 +152,8 @@ class CelestialBody {
             this.setPos();
         }
 
-        if ( this.name == "Earth" ) {
-            // console.log(this.sphere.position);
-        }
-
         if ( this.type == "Moon") {
-            // this.drawOrbit();
+            this.drawOrbit();
             this.setPos();
         }
     }
@@ -181,6 +172,12 @@ class CelestialBody {
 
         this.calculateE();
         this.calculateTrueAnomaly();
+
+        if ( this.name == "Mercury" ) {
+            console.log( "M: ", this.M );
+            console.log( "E: ", this.E );
+            console.log( "nu: ", this.nu );
+        }
     }
 }
 

@@ -91,13 +91,15 @@ export function getT( date ) {
     const M = date.getUTCMonth() + 1;
     const D = date.getUTCDate();
 
-    const JDN = Math.floor( ( 1461 * ( Y + 4800 + Math.floor( (M-14)/12 ) ) ) / 4 ) +
-           Math.floor( ( 367 * (M - 2 - 12 * Math.floor( (M-14)/12 ) ) ) / 12 ) -
-           Math.floor( ( 3 * Math.floor( Y + 4900 + Math.floor( (M-14)/12 ) ) / 100 ) / 4 ) +
-           D - 32075;
+    const A = Math.floor( ( M - 14 ) / 12 );
+    const B = 1461 * ( Y + 4800 + A );
+    const C = 367 * ( M - 2 - 12 * A );
+    const E = Math.floor( ( Y + 4900 + A ) / 100 );
+    const JDN = Math.floor( B / 4 ) + Math.floor( C / 12 )
+                - Math.floor( ( 3 * E ) / 4 ) + D - 32075;
 
-    const JD = JDN + date.getHours() / 24 + date.getMinutes() / 1440
-                   + date.getSeconds() / 86400 + date.getMilliseconds() / 86400000;
+    const JD = JDN + date.getUTCHours() / 24 + date.getUTCMinutes() / 1440
+                   + date.getUTCSeconds() / 86400 + date.getMilliseconds() / 86400000;
 
     return ( JD - 2451545.0 ) / 36525;
 }
