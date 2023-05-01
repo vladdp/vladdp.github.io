@@ -7,31 +7,12 @@ import * as utils from 'utils';
 
 class CelestialBody {
 
-    constructor(data) {
+    constructor( data ) {
         this.T = main.getT();
         this.parent = data.parent;
         this.type = data.type;
         this.name = data.name;
         this.data = data;
-
-        if ( this.parent != null ) {
-            this.parentPos = main.getBodyPosition( this.parent );
-        }
-        
-        if ( this.type == "Planet" ) {
-            this.updateElements( this.data );
-        } 
-
-        if ( this.type == "Moon" ) {
-            this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
-            this.e = data.e + data.de * this.T;
-            this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
-            this.L = ( utils.toRadians( data.L ) + utils.toRadians( data.dL ) * this.T ) % (2*Math.PI);
-            this.lop = ( utils.toRadians( data.lop ) + utils.toRadians( data.dlop ) * this.T ) % (2*Math.PI);
-            this.loan = utils.toRadians( data.loan ) + utils.toRadians( data.dloan ) * this.T;
-            this.argperi = this.lop - this.loan;
-            this.nu = 0;
-        }
         
         this.radius = data.radius / utils.scale;
         this.rotationAngle = 2 * Math.PI / data.rotationPeriod;
@@ -49,19 +30,6 @@ class CelestialBody {
                 map: new THREE.TextureLoader().load( this.texture ),
             })
         );
-
-        if (this.parent != null) {
-            this.ellipsePoints = [];
-            this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
-            this.ellipse = new THREE.Line(
-                this.ellipseGeometry,
-                new THREE.LineBasicMaterial( { color: this.color } )
-            );
-            this.ellipse.geometry.attributes.position.needsUpdate = true;
-
-            this.drawOrbit();
-            this.setPos();
-        }
 
         main.addFocus(this.option);
         main.addToScene(this.sphere);
@@ -120,8 +88,7 @@ class CelestialBody {
         }
 
         this.ellipseGeometry.setFromPoints( this.ellipsePoints );
-
-        main.addToScene(this.ellipse);
+        this.ellipse.geometry.computeBoundingSphere();
     }
 
     setPos() {
@@ -143,7 +110,7 @@ class CelestialBody {
                                   this.parentPos.z + this.pos[0].z );
     }
 
-    update( dPos ) {
+    update() {
         this.sphere.rotation.y += this.rotationAngle * 100;
 
         if ( this.type == "Planet" ) {
@@ -173,12 +140,69 @@ class CelestialBody {
         this.calculateE();
         this.calculateTrueAnomaly();
 
-        if ( this.name == "Mercury" ) {
-            console.log( "M: ", this.M );
-            console.log( "E: ", this.E );
-            console.log( "nu: ", this.nu );
-        }
+        // if ( this.name == "Mercury" ) {
+        //     console.log( "M: ", this.M );
+        //     console.log( "E: ", this.E );
+        //     console.log( "nu: ", this.nu );
+        // }
     }
 }
 
-export { CelestialBody };
+class Planet extends CelestialBody {
+
+    constructor( data ) {
+        super( data );
+
+        this.parentPos = main.getBodyPosition( this.parent );
+        this.updateElements( this.data );
+
+        this.ellipsePoints = [];
+        this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
+        this.ellipse = new THREE.Line(
+            this.ellipseGeometry,
+            new THREE.LineBasicMaterial( { color: this.color } )
+        );
+        // this.ellipse.frustumCulled = false;
+        this.ellipse.geometry.attributes.position.needsUpdate = true;
+
+        this.drawOrbit();
+        this.setPos();
+
+        main.addToScene(this.ellipse);
+    }
+    
+}
+
+class Moon extends CelestialBody {
+
+    constructor( data ) {
+        super( data );
+
+        this.parentPos = main.getBodyPosition( this.parent );
+
+        this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
+        this.e = data.e + data.de * this.T;
+        this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
+        this.L = ( utils.toRadians( data.L ) + utils.toRadians( data.dL ) * this.T ) % (2*Math.PI);
+        this.lop = ( utils.toRadians( data.lop ) + utils.toRadians( data.dlop ) * this.T ) % (2*Math.PI);
+        this.loan = utils.toRadians( data.loan ) + utils.toRadians( data.dloan ) * this.T;
+        this.argperi = this.lop - this.loan;
+        this.nu = 0;
+
+        this.ellipsePoints = [];
+        this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
+        this.ellipse = new THREE.Line(
+            this.ellipseGeometry,
+            new THREE.LineBasicMaterial( { color: this.color } )
+        );
+        // this.ellipse.frustumCulled = false;
+        this.ellipse.geometry.attributes.position.needsUpdate = true;
+
+        this.drawOrbit();
+        this.setPos();
+
+        main.addToScene(this.ellipse);
+    }
+}
+
+export { CelestialBody, Planet, Moon };

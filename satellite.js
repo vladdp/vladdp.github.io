@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import * as main from 'main';
 import * as utils from 'utils';
@@ -44,6 +45,8 @@ class Satellite {
         this.parent = main.getFocus();
         this.parentPos = main.getBodyPosition( this.parent );
 
+        this.loadModel();
+
         this.geometry = new THREE.BoxGeometry( this.width, this.height, this.depth );
         this.material = new THREE.MeshBasicMaterial( {color: color} );
         this.material.wireframe = true;
@@ -53,6 +56,15 @@ class Satellite {
         this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
         this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
+    }
+
+    async loadModel() {
+        const loader = new GLTFLoader();
+
+        this.model = await loader.loadAsync( 'assets/models/deep_space/deep_space.glb' );
+
+        main.addToScene( this.model.scene );
+        console.log( this.model );
     }
 
     drawOrbit() {
@@ -65,16 +77,17 @@ class Satellite {
             this.y[i] = this.r[i] * Math.sin(this.theta[i]);
             this.ellipsePoints.push( new THREE.Vector3( this.x[i], this.y[i], this.z[i] ));
         }
-        
+
         utils.rot_z( this.ellipsePoints, this.w );
         utils.rot_x( this.ellipsePoints, -(Math.PI / 2) + this.i );
         utils.rot_y( this.ellipsePoints, this.raan );
-
+        
         for (let i = 0; i < this.ellipsePoints.length; i++) {
             this.ellipsePoints[i].add(this.parentPos);
         }
 
         this.ellipseGeometry.setFromPoints( this.ellipsePoints );
+        this.ellipse.geometry.computeBoundingSphere();
     }
 
     setPos() {
@@ -121,6 +134,7 @@ class Satellite {
     update() {
         this.drawOrbit();
         this.setPos();
+        this.model.scene.rotation.y += 0.01;
     }
 
     setSpeed(speed) {
