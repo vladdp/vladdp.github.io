@@ -31,25 +31,17 @@ canvas {
     width: 100px;
 }
 
-#satList {
-    position: absolute;
-    border-radius: 8px;
-    top: 120px;
-    left: 20px;
-    width: 100px;
-}
-
 #focus {
     position: absolute;
     color: whitesmoke;
-    top: 160px;
+    top: 120px;
     left: 20px;
 }
 
 #focusList {
     position: absolute;
     border-radius: 8px;
-    top: 160px;
+    top: 120px;
     left: 80px;
     width: 100px;
 }
@@ -70,29 +62,11 @@ canvas {
     left: 20px;
 }
 
-#inputSemiMajor {
-    position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 230px;
-    left: 180px;
-    width: 100px;
-}
-
 #eccentricity {
     position: absolute;
     color: whitesmoke;
     top: 260px;
     left: 20px;
-}
-
-#inputEccentricity {
-    position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 260px;
-    left: 180px;
-    width: 100px;
 }
 
 #inclination {
@@ -102,29 +76,11 @@ canvas {
     left: 20px;
 }
 
-#inputInclination {
-    position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 290px;
-    left: 180px;
-    width: 100px;
-}
-
 #raan {
     position: absolute;
     color: whitesmoke;
     top: 320px;
     left: 20px;
-}
-
-#inputRaan {
-    position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 320px;
-    left: 180px;
-    width: 100px;
 }
 
 #argPer {
@@ -134,13 +90,24 @@ canvas {
     left: 20px;
 }
 
-#inputArgPer {
+#trueAnomaly {
     position: absolute;
-    text-align: right;
-    border-radius: 8px;
-    top: 350px;
-    left: 180px;
-    width: 100px;
+    color: whitesmoke;
+    top: 380px;
+    left: 20px;
+}
+
+#thrust {
+    position: absolute;
+    color: whitesmoke;
+    bottom: 125px;
+    left: 20px;
+}
+
+#thrustSlider {
+    position: absolute;
+    left: 20px;
+    bottom: 100px;
 }
 
 #simSpeed {

@@ -13,6 +13,7 @@ class CelestialBody {
         this.type = data.type;
         this.name = data.name;
         this.data = data;
+        this.simSpeed = 1;
         
         this.radius = data.radius / utils.scale;
         this.rotationAngle = 2 * Math.PI / data.rotationPeriod;
@@ -111,7 +112,7 @@ class CelestialBody {
     }
 
     update() {
-        this.sphere.rotation.y += this.rotationAngle * 100;
+        this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
 
         if ( this.type == "Planet" ) {
             this.T = main.getT();
@@ -146,6 +147,14 @@ class CelestialBody {
         //     console.log( "nu: ", this.nu );
         // }
     }
+
+    getPosition() {
+        return this.sphere.position;
+    }
+
+    setSimSpeed( simSpeed ) {
+        this.simSpeed = simSpeed;
+    }
 }
 
 class Planet extends CelestialBody {
@@ -168,7 +177,7 @@ class Planet extends CelestialBody {
         this.drawOrbit();
         this.setPos();
 
-        main.addToScene(this.ellipse);
+        // main.addToScene(this.ellipse);
     }
     
 }

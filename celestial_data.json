@@ -67,7 +67,7 @@
             "name": "Earth",
             "type": "Planet",
             "parent": "Sun",
-            "texture": "assets/earth.jpg",
+            "texture": "assets/earth_8k.jpg",
             "color": "royalblue",
 
             "radius": 6371,

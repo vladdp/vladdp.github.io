@@ -1,6 +1,6 @@
 export const scale = 1;
 export const AU = 149597870.7;
-export const speed = 1;
+export const speed = 100;
 export const rotSpeed = 0.001;
 export const MU = 3.986 * (10**5);
 
