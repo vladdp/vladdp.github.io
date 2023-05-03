@@ -1,4 +1,3 @@
-export const scale = 1;
 export const AU = 149597870.7;
 export const speed = 100;
 export const rotSpeed = 0.001;

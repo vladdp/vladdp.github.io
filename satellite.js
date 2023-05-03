@@ -6,13 +6,15 @@ import * as utils from 'utils';
 
 class Satellite {
     simSpeed = 1;
-    scale = utils.scale;
-    a = 10000/this.scale;
+    a = 10000;
     e = 0;
     i = 0;
     raan = 0;
     w = 0;
     v_0 = 0;
+
+    thrust = 10000;
+    thrustLevel = 0;
 
     resolution = 1000;
 
@@ -27,14 +29,6 @@ class Satellite {
     ny;
     nr;
 
-    vx = 0;
-    vy = 0;
-
-    width = 0.05;
-    height = 0.05;
-    depth = 0.05;
-
-    
     constructor(name, color) {
         this.name = name;
         this.color = color;
@@ -50,8 +44,10 @@ class Satellite {
         this.option.value = this.name;
 
         this.radius = 12;
+        this.mass = 610;
 
         main.addFocus(this.option);
+        main.updateParams( this );
 
         this.loadModel();
 
@@ -70,6 +66,8 @@ class Satellite {
         this.model = await loader.loadAsync( 'assets/models/deep_space/deep_space.glb' );
 
         main.addToScene( this.model.scene );
+
+        // this.model.scene.quaternion.set( this.q_0.x, this.q_0.y, this.q_0.z, this.q_0.w );
     }
 
     drawOrbit() {
@@ -117,15 +115,15 @@ class Satellite {
     }
     
     updateTrueAnomaly() {
-        this.nup = Math.sqrt( utils.MU / (this.p * utils.scale) );
-        this.vx = this.nup * -Math.sin( this.v_0 );
-        this.vy = this.nup * ( parseFloat(this.e) + Math.cos( this.v_0 ) );
+        this.v = []
+        this.nup = Math.sqrt( utils.MU / this.p );
 
-        this.vx /= utils.scale;
-        this.vy /= utils.scale;
+        this.v_x = this.nup * -Math.sin( this.v_0 );
+        this.v_y = this.nup * ( parseFloat(this.e) + Math.cos( this.v_0 ) );
+        this.v_z = 0;
 
-        this.nx = this.pos_x + this.vx * (this.simSpeed / 60);
-        this.ny = this.pos_y + this.vy * (this.simSpeed / 60);
+        this.nx = this.pos_x + this.v_x * (this.simSpeed / 60);
+        this.ny = this.pos_y + this.v_y * (this.simSpeed / 60);
 
         this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
 
@@ -134,15 +132,57 @@ class Satellite {
         } else {
             this.v_0 = 2*Math.PI - Math.acos( this.nx / this.nr );
         }
+
+        this.v.push( new THREE.Vector3( this.v_x, this.v_y, this.v_z ) );
+
+        utils.rot_z( this.v, this.w );
+        utils.rot_x( this.v, -(Math.PI / 2) + this.i );
+        utils.rot_y( this.v, this.raan );
+    }
+
+    applyThrust() {
+        this.acc = ( (this.thrust * this.thrustLevel) / this.mass) / 1000;
+
+        let dir = new THREE.Vector3( 0, 1, 0 );
+        dir.applyQuaternion( this.getQuaternion() );
+
+        console.log( dir );
+
+        let ax = this.acc * dir.x;
+        let ay = this.acc * dir.y;
+        let az = this.acc * dir.z;
+
+        console.log( this.acc, ax, ay, az );
     }
 
     update() {
         // this.drawOrbit();
+        if ( this.thrustLevel > 0 ) {
+            this.applyThrust();
+        }
+
         this.setPos();
+        main.updateParams( this );
     }
 
     getPosition() {
         return this.model.scene.position;
+    }
+
+    getPositionRelativeToParent() {
+        return this.pos[0];
+    }
+
+    getVelocity() {
+        return this.v[0];
+    }
+
+    getQuaternion() {
+        return this.model.scene.quaternion;
+    }
+
+    setThrustLevel( thrustLevel ) {
+        this.thrustLevel = thrustLevel;
     }
 
     setSimSpeed( simSpeed ) {

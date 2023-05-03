@@ -65,6 +65,71 @@ class UI {
         this.trueAnomaly.id = "trueAnomaly";
         document.body.appendChild(this.trueAnomaly);
 
+        this.position = document.createElement('text');
+        this.position.innerText = 'position';
+        this.position.id = 'position';
+        document.body.appendChild(this.position);
+
+        this.r_x = document.createElement('text');
+        this.r_x.innerText = 'x: ';
+        this.r_x.id = 'r_x';
+        document.body.appendChild(this.r_x);
+
+        this.r_y = document.createElement('text');
+        this.r_y.innerText = 'y: ';
+        this.r_y.id = 'r_y';
+        document.body.appendChild(this.r_y);
+
+        this.r_z = document.createElement('text');
+        this.r_z.innerText = 'z: ';
+        this.r_z.id = 'r_z';
+        document.body.appendChild(this.r_z);
+
+        this.velocity = document.createElement('text');
+        this.velocity.innerText = 'velocity';
+        this.velocity.id = 'velocity';
+        document.body.appendChild(this.velocity);
+
+        this.v_x = document.createElement('text');
+        this.v_x.innerText = 'x: ';
+        this.v_x.id = 'v_x';
+        document.body.appendChild(this.v_x);
+
+        this.v_y = document.createElement('text');
+        this.v_y.innerText = 'y: ';
+        this.v_y.id = 'v_y';
+        document.body.appendChild(this.v_y);
+
+        this.v_z = document.createElement('text');
+        this.v_z.innerText = 'z: ';
+        this.v_z.id = 'v_z';
+        document.body.appendChild(this.v_z);
+
+        this.quaternion = document.createElement('text');
+        this.quaternion.innerText = 'quaternion';
+        this.quaternion.id = 'quaternion';
+        document.body.appendChild(this.quaternion);
+
+        this.q_x = document.createElement('text');
+        this.q_x.innerText = 'x: ';
+        this.q_x.id = 'q_x';
+        document.body.appendChild(this.q_x);
+
+        this.q_y = document.createElement('text');
+        this.q_y.innerText = 'y: ';
+        this.q_y.id = 'q_y';
+        document.body.appendChild(this.q_y);
+
+        this.q_z = document.createElement('text');
+        this.q_z.innerText = 'z: ';
+        this.q_z.id = 'q_z';
+        document.body.appendChild(this.q_z);
+
+        this.q_w = document.createElement('text');
+        this.q_w.innerText = 'w: ';
+        this.q_w.id = 'q_w';
+        document.body.appendChild(this.q_w);
+
         this.thrust = document.createElement('text');
         this.thrust.innerText = 'Thrust: ';
         this.thrust.id = "thrust"
@@ -74,6 +139,7 @@ class UI {
         this.thrustSlider.setAttribute("type", "range");
         this.thrustSlider.id = 'thrustSlider';
         this.thrustSlider.value = "0";
+        this.thrustSlider.addEventListener( 'input', () => this.updateThrustLevel() );
         document.body.appendChild( this.thrustSlider );
 
         this.date = new Date();
@@ -110,6 +176,34 @@ class UI {
 
     changeFocus() {
         main.setFocus( this.focusList.value );
+    }
+
+    updateAttitude( satellite ) {
+        this.r_x.innerText = "x: " + satellite.getPositionRelativeToParent().x.toFixed(2).toString();
+        this.r_y.innerText = "y: " + satellite.getPositionRelativeToParent().y.toFixed(2).toString();
+        this.r_z.innerText = "z: " + satellite.getPositionRelativeToParent().z.toFixed(2).toString();
+
+        this.v_x.innerText = "x: " + satellite.getVelocity().x.toFixed(3).toString();
+        this.v_y.innerText = "y: " + satellite.getVelocity().y.toFixed(3).toString();
+        this.v_z.innerText = "z: " + satellite.getVelocity().z.toFixed(3).toString();
+
+        this.q_x.innerText = "x:  " + satellite.getQuaternion().x.toFixed(6).toString();
+        this.q_y.innerText = "y:  " + satellite.getQuaternion().y.toFixed(6).toString();
+        this.q_z.innerText = "z:  " + satellite.getQuaternion().z.toFixed(6).toString();
+        this.q_w.innerText = "w: " + satellite.getQuaternion().w.toFixed(6).toString();
+    }
+
+    updateParams( satellite ) {
+        this.semiMajor.innerText = "a: " + satellite.a;
+        this.eccentricity.innerText = "e: " + satellite.e;
+        this.inclination.innerText = "i: " + satellite.i;
+        this.raan.innerText = "Ω: " + satellite.raan;
+        this.argPer.innerText = "ω: " + satellite.w;
+        this.trueAnomaly.innerText = "ν: " + utils.toDegrees(satellite.v_0).toFixed(3) + " deg";
+    }
+
+    updateThrustLevel() {
+        main.updateThrust( this.thrustSlider.value );
     }
 
     updateSimSpeed( simSpeed ) {

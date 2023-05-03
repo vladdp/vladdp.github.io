@@ -15,7 +15,7 @@ class CelestialBody {
         this.data = data;
         this.simSpeed = 1;
         
-        this.radius = data.radius / utils.scale;
+        this.radius = data.radius;
         this.rotationAngle = 2 * Math.PI / data.rotationPeriod;
 
         this.texture = data.texture;
@@ -117,6 +117,7 @@ class CelestialBody {
         if ( this.type == "Planet" ) {
             this.T = main.getT();
             this.updateElements( this.data );
+            // this.drawOrbit();
             this.setPos();
         }
 
@@ -127,7 +128,7 @@ class CelestialBody {
     }
 
     updateElements( data ) {
-        this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
+        this.a = (data.a * utils.AU) + (data.da * utils.AU) * this.T;
         this.e = data.e + data.de * this.T;
         this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
         this.L = ( utils.toRadians( data.L ) + utils.toRadians( data.dL ) * this.T ) % (2*Math.PI);
@@ -189,7 +190,7 @@ class Moon extends CelestialBody {
 
         this.parentPos = main.getBodyPosition( this.parent );
 
-        this.a = (data.a * utils.AU) / utils.scale + ( (data.da * utils.AU) / utils.scale ) * this.T;
+        this.a = data.a * utils.AU + (data.da * utils.AU) * this.T;
         this.e = data.e + data.de * this.T;
         this.i = utils.toRadians( data.i ) + utils.toRadians( data.di ) * this.T;
         this.L = ( utils.toRadians( data.L ) + utils.toRadians( data.dL ) * this.T ) % (2*Math.PI);

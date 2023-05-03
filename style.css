@@ -65,36 +65,127 @@ canvas {
 #eccentricity {
     position: absolute;
     color: whitesmoke;
-    top: 260px;
+    top: 250px;
     left: 20px;
 }
 
 #inclination {
     position: absolute;
     color: whitesmoke;
-    top: 290px;
+    top: 270px;
     left: 20px;
 }
 
 #raan {
     position: absolute;
     color: whitesmoke;
-    top: 320px;
+    top: 290px;
     left: 20px;
 }
 
 #argPer {
     position: absolute;
     color: whitesmoke;
-    top: 350px;
+    top: 310px;
     left: 20px;
 }
 
 #trueAnomaly {
     position: absolute;
     color: whitesmoke;
-    top: 380px;
+    top: 330px;
     left: 20px;
+}
+
+#position {
+    position: absolute;
+    color: whitesmoke;
+    top: 360px;
+    left: 20px;
+}
+
+#r_x {
+    position: absolute;
+    color: whitesmoke;
+    top: 390px;
+    left: 30px;
+}
+
+#r_y {
+    position: absolute;
+    color: whitesmoke;
+    top: 410px;
+    left: 30px;
+}
+
+#r_z {
+    position: absolute;
+    color: whitesmoke;
+    top: 430px;
+    left: 30px;
+}
+
+#velocity {
+    position: absolute;
+    color: whitesmoke;
+    top: 460px;
+    left: 20px;
+}
+
+#v_x {
+    position: absolute;
+    color: whitesmoke;
+    top: 490px;
+    left: 30px;
+}
+
+#v_y {
+    position: absolute;
+    color: whitesmoke;
+    top: 510px;
+    left: 30px;
+}
+
+#v_z {
+    position: absolute;
+    color: whitesmoke;
+    top: 530px;
+    left: 30px;
+}
+
+#quaternion {
+    position: absolute;
+    color: whitesmoke;
+    top: 560px;
+    left: 20px;
+}
+
+#q_x {
+    position: absolute;
+    color: whitesmoke;
+    top: 590px;
+    left: 30px;
+}
+
+#q_y {
+    position: absolute;
+    color: whitesmoke;
+    top: 610px;
+    left: 30px;
+}
+
+#q_z {
+    position: absolute;
+    color: whitesmoke;
+    top: 630px;
+    left: 30px;
+}
+
+#q_w {
+    position: absolute;
+    color: whitesmoke;
+    top: 650px;
+    left: 30px;
 }
 
 #thrust {

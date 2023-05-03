@@ -73,6 +73,8 @@ function animate( timeStamp ) {
             bodies[body].update();
         }
         
+        ui.updateAttitude( bodies["Dart"] );
+
         bodyPos1 = bodies[ui.focusList.value].getPosition().clone();
         dbodyPos.copy(bodyPos1.sub(bodyPos0).clone());
         
@@ -91,11 +93,11 @@ document.addEventListener( 'keypress', ( event ) => {
     const keyName = event.key;
 
     if ( keyName === 'a' ) {
-        bodies['Dart'].yaw( 1 );
+        bodies['Dart'].yaw( -1 );
     }
     
     if ( keyName === 'd' ) {
-        bodies['Dart'].yaw( -1 );
+        bodies['Dart'].yaw( 1 );
     }
 
     if ( keyName === 's' ) {
@@ -124,6 +126,9 @@ document.addEventListener( 'keypress', ( event ) => {
 
     if ( keyName === '-' ) {
         simSpeed -= 10;
+        for (var body in bodies) {
+            bodies[body].setSimSpeed( simSpeed );
+        }
         ui.updateSimSpeed( simSpeed );
     }
 });
@@ -134,6 +139,14 @@ export function createSatellite( name ) {
 
 export function addToScene( element ) {
     scene.add(element);
+}
+
+export function updateParams( body ) {
+    ui.updateParams( body );
+}
+
+export function updateThrust( thrustLevel ) {
+    bodies["Dart"].setThrustLevel( thrustLevel );
 }
 
 export function addFocus( object ) {
@@ -168,5 +181,7 @@ function resize() {
 }
 
 window.onresize = resize;
+
+console.log( Math.acos(0) )
 
 animate();
