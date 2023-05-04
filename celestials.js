@@ -14,6 +14,7 @@ class CelestialBody {
         this.name = data.name;
         this.data = data;
         this.simSpeed = 1;
+        this.tol = 1e-6;
         
         this.radius = data.radius;
         this.rotationAngle = 2 * Math.PI / data.rotationPeriod;
@@ -37,19 +38,20 @@ class CelestialBody {
     }
 
     calculateE() {
-        const tol = 10 ** -6;
-        // const eStar = ( 180 / Math.PI ) * this.e;
-
+        var E = 0;
         var E = this.M - this.e * Math.sin( this.M );
 
-        var dM = E - this.e * Math.sin(E) - this.M;
-        var dE = E - ( dM / ( 1 - this.e * Math.cos(E) ) );
-        E += dE;
+        var f = E - this.e * Math.sin(E) - this.M;
+        var nE = E - ( f / ( 1 - this.e * Math.cos( E ) ) );
+        var dE = nE - E;
+        E = nE;
 
-        while ( Math.abs(dE) <= tol ) {
-            dM = E - this.e * Math.sin(E) - this.M;
-            dE = E - ( dM / ( 1 - this.e * Math.cos(E) ) );
-            E += dE;
+        while ( Math.abs(dE) <= this.tol ) {
+            f = E - this.e * Math.sin(E) - this.M;
+            nE = E - ( f / ( 1 - this.e * Math.cos( E ) ) );
+
+            dE = nE - E;
+            E = nE;
         }
 
         this.E = E;
@@ -100,7 +102,7 @@ class CelestialBody {
         this.x = this.r * Math.cos( this.nu );
         this.y = this.r * Math.sin( this.nu );
         this.z = 0;
-        this.pos.push( new THREE.Vector3(this.x, this.y, this.z) );
+        this.pos.push( new THREE.Vector3( this.x, this.y, this.z ) );
 
         utils.rot_z( this.pos, this.argperi );
         utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
@@ -114,14 +116,7 @@ class CelestialBody {
     update() {
         this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
 
-        if ( this.type == "Planet" ) {
-            this.T = main.getT();
-            this.updateElements( this.data );
-            // this.drawOrbit();
-            this.setPos();
-        }
-
-        if ( this.type == "Moon") {
+        if ( this.type === "Moon") {
             this.drawOrbit();
             this.setPos();
         }
@@ -136,21 +131,23 @@ class CelestialBody {
         this.loan = utils.toRadians( data.loan ) + utils.toRadians( data.dloan ) * this.T;
         this.argperi = this.lop - this.loan;
         this.M = this.L - this.lop;
-        if ( this.M > Math.PI ) this.M -= 2*Math.PI;
-        if ( this.M < -Math.PI ) this.M += 2*Math.PI;
+        // if ( this.M > Math.PI ) this.M -= 2*Math.PI;
+        // if ( this.M < -Math.PI ) this.M += 2*Math.PI;
 
         this.calculateE();
         this.calculateTrueAnomaly();
-
-        // if ( this.name == "Mercury" ) {
-        //     console.log( "M: ", this.M );
-        //     console.log( "E: ", this.E );
-        //     console.log( "nu: ", this.nu );
-        // }
     }
 
     getPosition() {
         return this.sphere.position;
+    }
+
+    getMass() {
+        return this.data.mass;
+    }
+
+    getSOIRadius() {
+        return this.a * ( this.data.mass / main.getBodyMass( this.parent ) ) ** ( 2 / 5 );
     }
 
     setSimSpeed( simSpeed ) {
@@ -175,10 +172,51 @@ class Planet extends CelestialBody {
         // this.ellipse.frustumCulled = false;
         this.ellipse.geometry.attributes.position.needsUpdate = true;
 
+        this.SOIRadius = this.getSOIRadius();
+        this.SOISphere = new THREE.LineSegments(
+            new THREE.WireframeGeometry( 
+                new THREE.SphereGeometry( this.SOIRadius, 10, 10 )
+            ),
+            new THREE.LineBasicMaterial( { color: this.color } )
+        );
+
         this.drawOrbit();
         this.setPos();
 
         // main.addToScene(this.ellipse);
+        main.addToScene( this.SOISphere );
+    }
+
+    setPos() {
+        this.pos = [];
+        this.p = this.a * ( 1-Math.pow(this.e, 2) );
+        this.r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
+
+        this.x = this.r * Math.cos( this.nu );
+        this.y = this.r * Math.sin( this.nu );
+        this.z = 0;
+        this.pos.push( new THREE.Vector3( this.x, this.y, this.z ) );
+
+        utils.rot_z( this.pos, this.argperi );
+        utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
+        utils.rot_y( this.pos, this.loan );
+
+        this.sphere.position.set( this.parentPos.x + this.pos[0].x, 
+                                  this.parentPos.y + this.pos[0].y, 
+                                  this.parentPos.z + this.pos[0].z );
+
+        this.SOISphere.position.set( this.parentPos.x + this.pos[0].x, 
+                                  this.parentPos.y + this.pos[0].y, 
+                                  this.parentPos.z + this.pos[0].z );
+    }
+
+    update() {
+        this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
+
+        this.T = main.getT();
+        this.updateElements( this.data );
+        // this.drawOrbit();
+        this.setPos();
     }
     
 }

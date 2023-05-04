@@ -6,6 +6,7 @@
         "parent": null,
         "texture": "assets/sun.jpg",
 
+        "mass": 1989100000e21,
         "radius": 696342,
 
         "rotationPeriod": 2164320
@@ -20,6 +21,7 @@
             "texture": "assets/mercury.jpg",
             "color": "gray",
 
+            "mass": 330.11e21,
             "radius": 2440,
             "a": 0.38709843,
             "da": 0,
@@ -45,6 +47,7 @@
             "texture": "assets/venus.jpg",
             "color": "sandybrown",
 
+            "mass": 4867.5e21,
             "radius": 6052,
             "a": 0.72332102,
             "da": -0.00000026,
@@ -70,6 +73,7 @@
             "texture": "assets/earth_8k.jpg",
             "color": "royalblue",
 
+            "mass": 5972.4e21,
             "radius": 6371,
             "a": 1.00000018,
             "da": -0.00000003,
@@ -95,6 +99,7 @@
             "texture": "assets/mars.jpg",
             "color": "orangered",
 
+            "mass": 641.71e21,
             "radius": 3390,
             "a": 1.52371243,
             "da": 0.00000097,
@@ -120,6 +125,7 @@
             "texture": "assets/jupiter.jpg",
             "color": "blanchedalmond",
 
+            "mass": 1898187e21,
             "radius": 69911,
             "a": 5.20248019,
             "da": -0.00002864,
@@ -149,6 +155,7 @@
             "texture": "assets/ganymede.jpg",
             "color": "rosybrown",
 
+            "mass": 148.2e21,
             "radius": 2634,
             "a": 0.007155182056,
             "da": 0,
@@ -163,18 +170,19 @@
             "loan": 0.001,
             "dloan": 0,
             "argperi": 0,
-
+            
             "rotationPeriod": 618153.38
-
+            
         },
-
+        
         "Moon": {
             "name": "Moon",
             "type": "Moon",
             "parent": "Earth",
             "texture": "assets/moon.jpg",
             "color": "white",
-
+            
+            "mass": 73.46e21,
             "radius": 1737,
             "a": 0.00257,
             "da": 0,

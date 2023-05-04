@@ -7,13 +7,13 @@ import * as utils from 'utils';
 class Satellite {
     simSpeed = 1;
     a = 10000;
-    e = 0;
+    e = 0.00001;
     i = 0;
     raan = 0;
     w = 0;
     v_0 = 0;
 
-    thrust = 10000;
+    thrust = 1000;
     thrustLevel = 0;
 
     resolution = 1000;
@@ -46,6 +46,13 @@ class Satellite {
         this.radius = 12;
         this.mass = 610;
 
+        this.posIJK = new THREE.Vector3();
+        this.velIJK = new THREE.Vector3();
+        this.accIJK = new THREE.Vector3();
+        this.h = new THREE.Vector3();
+        this.K = new THREE.Vector3( 0, 0, 1 );
+        this.n = new THREE.Vector3();
+
         main.addFocus(this.option);
         main.updateParams( this );
 
@@ -57,7 +64,7 @@ class Satellite {
         this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
 
-        // main.addToScene( this.ellipse );
+        main.addToScene( this.ellipse );
     }
 
     async loadModel() {
@@ -112,6 +119,8 @@ class Satellite {
         this.model.scene.position.set( this.parentPos.x + this.pos[0].x, 
                                 this.parentPos.y + this.pos[0].y,
                                 this.parentPos.z + this.pos[0].z );
+
+        this.posIJK.set( this.pos[0].x, -this.pos[0].z, this.pos[0].y);    
     }
     
     updateTrueAnomaly() {
@@ -138,29 +147,55 @@ class Satellite {
         utils.rot_z( this.v, this.w );
         utils.rot_x( this.v, -(Math.PI / 2) + this.i );
         utils.rot_y( this.v, this.raan );
+
+        this.velIJK.set( this.v[0].x, -this.v[0].z, this.v[0].y);
     }
 
     applyThrust() {
-        this.acc = ( (this.thrust * this.thrustLevel) / this.mass) / 1000;
-
         let dir = new THREE.Vector3( 0, 1, 0 );
         dir.applyQuaternion( this.getQuaternion() );
-
-        console.log( dir );
-
-        let ax = this.acc * dir.x;
-        let ay = this.acc * dir.y;
-        let az = this.acc * dir.z;
-
-        console.log( this.acc, ax, ay, az );
+        
+        this.acc = dir.clone().multiplyScalar( ( (this.thrust * this.thrustLevel) / this.mass) / 1000 );
+        this.accIJK.set( this.acc.x, -this.acc.z, this.acc.y )
+        // console.log( "a: ", this.accIJK );
+        
+        this.velIJK.add( this.accIJK.clone().divideScalar( 60 / this.simSpeed ) );
+        // console.log( "r: ", this.posIJK );
+        // console.log( "v: ", this.velIJK );
+        
+        this.h.crossVectors( this.posIJK.clone(), this.velIJK.clone() );
+        
+        this.n.crossVectors( this.K.clone(), this.h.clone() );
+        
+        let e = this.posIJK.clone().multiplyScalar( this.velIJK.clone().length() ** 2 - utils.MU / this.posIJK.clone().length() ).sub(
+            this.velIJK.clone().multiplyScalar( this.posIJK.clone().dot( this.velIJK.clone() ) ) ).divideScalar( utils.MU );
+   
+        console.log( "Last: ", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
+        let p = this.h.clone().length() ** 2 / ( utils.MU );
+        this.a = p / ( 1 - this.e ** 2 );
+        this.e = e.length();
+        this.i = Math.acos( this.h.clone().z / this.h.clone().length() );
+        this.raan = Math.acos( this.n.clone().x / this.n.clone().length() );
+        if ( this.n.y < 0 ) {
+            this.raan = 2 * Math.PI - this.raan;
+        }
+        this.w = Math.acos( this.n.clone().dot( e.clone() ) / ( this.n.clone().length() * this.e ) );
+        if ( e.z < 0 ) {
+            this.w = 2 * Math.PI - this.w;
+        }
+        this.v_0 = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.clone().length() ) );
+        if ( this.posIJK.clone().dot( this.velIJK.clone() ) < 0 ) {
+            this.v_0 = 2 * Math.PI - this.v_0;
+        }
+        console.log( "New", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
     }
 
     update() {
-        // this.drawOrbit();
         if ( this.thrustLevel > 0 ) {
             this.applyThrust();
         }
-
+        
+        this.drawOrbit();
         this.setPos();
         main.updateParams( this );
     }
@@ -169,12 +204,20 @@ class Satellite {
         return this.model.scene.position;
     }
 
+    getPositionIJK() {
+        return this.posIJK;
+    }
+
     getPositionRelativeToParent() {
         return this.pos[0];
     }
 
     getVelocity() {
         return this.v[0];
+    }
+
+    getVelocityIJK() {
+        return this.velIJK;
     }
 
     getQuaternion() {

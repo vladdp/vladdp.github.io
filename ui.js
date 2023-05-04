@@ -66,7 +66,7 @@ class UI {
         document.body.appendChild(this.trueAnomaly);
 
         this.position = document.createElement('text');
-        this.position.innerText = 'position';
+        this.position.innerText = 'position [km]';
         this.position.id = 'position';
         document.body.appendChild(this.position);
 
@@ -86,7 +86,7 @@ class UI {
         document.body.appendChild(this.r_z);
 
         this.velocity = document.createElement('text');
-        this.velocity.innerText = 'velocity';
+        this.velocity.innerText = 'velocity [km/s]';
         this.velocity.id = 'velocity';
         document.body.appendChild(this.velocity);
 
@@ -179,13 +179,19 @@ class UI {
     }
 
     updateAttitude( satellite ) {
-        this.r_x.innerText = "x: " + satellite.getPositionRelativeToParent().x.toFixed(2).toString();
-        this.r_y.innerText = "y: " + satellite.getPositionRelativeToParent().y.toFixed(2).toString();
-        this.r_z.innerText = "z: " + satellite.getPositionRelativeToParent().z.toFixed(2).toString();
+        // this.r_x.innerText = "x: " + satellite.getPositionRelativeToParent().x.toFixed(2).toString();
+        // this.r_y.innerText = "y: " + satellite.getPositionRelativeToParent().y.toFixed(2).toString();
+        // this.r_z.innerText = "z: " + satellite.getPositionRelativeToParent().z.toFixed(2).toString();
+        this.r_x.innerText = "x: " + satellite.getPositionIJK().x.toFixed(2).toString();
+        this.r_y.innerText = "y: " + satellite.getPositionIJK().y.toFixed(2).toString();
+        this.r_z.innerText = "z: " + satellite.getPositionIJK().z.toFixed(2).toString();
 
-        this.v_x.innerText = "x: " + satellite.getVelocity().x.toFixed(3).toString();
-        this.v_y.innerText = "y: " + satellite.getVelocity().y.toFixed(3).toString();
-        this.v_z.innerText = "z: " + satellite.getVelocity().z.toFixed(3).toString();
+        // this.v_x.innerText = "x: " + satellite.getVelocity().x.toFixed(3).toString();
+        // this.v_y.innerText = "y: " + satellite.getVelocity().y.toFixed(3).toString();
+        // this.v_z.innerText = "z: " + satellite.getVelocity().z.toFixed(3).toString();
+        this.v_x.innerText = "x: " + satellite.getVelocityIJK().x.toFixed(3).toString();
+        this.v_y.innerText = "y: " + satellite.getVelocityIJK().y.toFixed(3).toString();
+        this.v_z.innerText = "z: " + satellite.getVelocityIJK().z.toFixed(3).toString();
 
         this.q_x.innerText = "x:  " + satellite.getQuaternion().x.toFixed(6).toString();
         this.q_y.innerText = "y:  " + satellite.getQuaternion().y.toFixed(6).toString();
@@ -194,11 +200,11 @@ class UI {
     }
 
     updateParams( satellite ) {
-        this.semiMajor.innerText = "a: " + satellite.a;
-        this.eccentricity.innerText = "e: " + satellite.e;
-        this.inclination.innerText = "i: " + satellite.i;
-        this.raan.innerText = "Ω: " + satellite.raan;
-        this.argPer.innerText = "ω: " + satellite.w;
+        this.semiMajor.innerText = "a: " + satellite.a.toFixed(2);
+        this.eccentricity.innerText = "e: " + satellite.e.toFixed(3);
+        this.inclination.innerText = "i: " + utils.toDegrees(satellite.i).toFixed(3) + " deg";
+        this.raan.innerText = "Ω: " + utils.toDegrees(satellite.raan).toFixed(3) + " deg";
+        this.argPer.innerText = "ω: " + utils.toDegrees(satellite.w).toFixed(3) + " deg";
         this.trueAnomaly.innerText = "ν: " + utils.toDegrees(satellite.v_0).toFixed(3) + " deg";
     }
 
@@ -215,6 +221,10 @@ class UI {
         this.ui_date.innerText = this.date.toUTCString();
 
         this.T = utils.getT( this.date );
+    }
+
+    getDate() {
+        return this.date;
     }
 
     updateFPS( fps ) {

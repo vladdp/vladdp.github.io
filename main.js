@@ -36,7 +36,7 @@ bodies["Mars"] = new Planet(data.Planet.Mars);
 bodies["Jupiter"] = new Planet(data.Planet.Jupiter);
 bodies["Moon"] = new Moon(data.Moon.Moon);
 bodies["Ganymede"] = new Moon(data.Moon.Ganymede);
-bodies["Dart"] = new Satellite( 'Dart', 'gold' );
+bodies["DeepSpace"] = new Satellite( 'DeepSpace', 'gold' );
 
 setFocus("Earth");
 ui.focusList.value = "Earth";
@@ -73,7 +73,7 @@ function animate( timeStamp ) {
             bodies[body].update();
         }
         
-        ui.updateAttitude( bodies["Dart"] );
+        ui.updateAttitude( bodies["DeepSpace"] );
 
         bodyPos1 = bodies[ui.focusList.value].getPosition().clone();
         dbodyPos.copy(bodyPos1.sub(bodyPos0).clone());
@@ -93,31 +93,31 @@ document.addEventListener( 'keypress', ( event ) => {
     const keyName = event.key;
 
     if ( keyName === 'a' ) {
-        bodies['Dart'].yaw( -1 );
+        bodies['DeepSpace'].yaw( -1 );
     }
     
     if ( keyName === 'd' ) {
-        bodies['Dart'].yaw( 1 );
+        bodies['DeepSpace'].yaw( 1 );
     }
 
     if ( keyName === 's' ) {
-        bodies['Dart'].pitch( -1 );
+        bodies['DeepSpace'].pitch( -1 );
     }
     
     if ( keyName === 'w' ) {
-        bodies['Dart'].pitch( 1 );
+        bodies['DeepSpace'].pitch( 1 );
     }
 
     if ( keyName === 'q' ) {
-        bodies['Dart'].roll( -1 );
+        bodies['DeepSpace'].roll( -1 );
     }
     
     if ( keyName === 'e' ) {
-        bodies['Dart'].roll( 1 );
+        bodies['DeepSpace'].roll( 1 );
     }
 
     if ( keyName === '=' ) {
-        simSpeed += 10;
+        simSpeed += 10000;
         for (var body in bodies) {
             bodies[body].setSimSpeed( simSpeed );
         }
@@ -125,7 +125,7 @@ document.addEventListener( 'keypress', ( event ) => {
     }
 
     if ( keyName === '-' ) {
-        simSpeed -= 10;
+        simSpeed -= 10000;
         for (var body in bodies) {
             bodies[body].setSimSpeed( simSpeed );
         }
@@ -146,7 +146,7 @@ export function updateParams( body ) {
 }
 
 export function updateThrust( thrustLevel ) {
-    bodies["Dart"].setThrustLevel( thrustLevel );
+    bodies["DeepSpace"].setThrustLevel( thrustLevel );
 }
 
 export function addFocus( object ) {
@@ -165,13 +165,21 @@ export function setFocus( body ) {
 export function getFocus() {
     return ui.focusList.value;
 }
-    
+
+export function getDate() {
+    return ui.getDate();
+}
+
 export function getT() {
     return ui.T;
 }
 
 export function getBodyPosition( body ) {
     return bodies[body].getPosition();
+}
+
+export function getBodyMass( body ) {
+    return bodies[body].getMass();
 }
 
 function resize() {
@@ -181,7 +189,5 @@ function resize() {
 }
 
 window.onresize = resize;
-
-console.log( Math.acos(0) )
 
 animate();
