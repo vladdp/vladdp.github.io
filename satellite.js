@@ -81,6 +81,9 @@ class Satellite {
         let ellipsePoints = [];
         this.p = this.a * (1-Math.pow(this.e, 2));
 
+        console.log("a: ", this.a, "e: ", this.e, "i: ", this.i, "raan: ", this.raan, "w: ", this.w);
+        console.log( "v_0: ", this.v_0 );
+
         for (var i=0; i < this.resolution; i++) {
             this.r[i] = this.p / ( 1 + this.e * Math.cos( this.theta[i] ) );
             this.x[i] = this.r[i] * Math.cos( this.theta[i] );
@@ -104,7 +107,7 @@ class Satellite {
 
     setPos() {
         this.pos = [];
-        this.p = this.a * ( 1 - Math.pow( this.e, 2 ) );
+        this.p = this.a * ( 1 - this.e ** 2 );
         this.pos_r = this.p / ( 1 + this.e * Math.cos( this.v_0 ) );
         this.pos_x = this.pos_r * Math.cos( this.v_0 );
         this.pos_y = this.pos_r * Math.sin( this.v_0 );
@@ -132,7 +135,7 @@ class Satellite {
         this.nup = Math.sqrt( utils.MU / this.p );
 
         this.v_x = this.nup * -Math.sin( this.v_0 );
-        this.v_y = this.nup * ( parseFloat(this.e) + Math.cos( this.v_0 ) );
+        this.v_y = this.nup * ( this.e + Math.cos( this.v_0 ) );
         this.v_z = 0;
 
         this.nx = this.pos_x + this.v_x * (this.simSpeed / main.getFPS());
@@ -154,7 +157,6 @@ class Satellite {
         
         this.velIJK.set( this.v[0].x, -this.v[0].z, this.v[0].y);
 
-        // console.log( "Calc vel: ", this.velIJK );
     }
 
     applyThrust() {
@@ -163,23 +165,18 @@ class Satellite {
         
         this.acc = dir.clone().multiplyScalar( ( (this.thrust * this.thrustLevel) / this.mass) / 1000 );
         this.accIJK.set( this.acc.x, -this.acc.z, this.acc.y )
-        console.log( "a: ", this.accIJK );
-        
+
         this.velIJK.add( this.accIJK.clone().divideScalar( main.getFPS() ) );
-        console.log( "r: ", this.posIJK );
-        console.log( "v: ", this.velIJK );
         
         this.h.crossVectors( this.posIJK.clone(), this.velIJK.clone() );
-        
         this.n.crossVectors( this.K.clone(), this.h.clone() );
         
         let e = this.posIJK.clone().multiplyScalar( this.velIJK.clone().length() ** 2 - utils.MU / this.posIJK.clone().length() ).sub(
             this.velIJK.clone().multiplyScalar( this.posIJK.clone().dot( this.velIJK.clone() ) ) ).divideScalar( utils.MU );
    
-        // console.log( "Last: ", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
-        let p = this.h.clone().length() ** 2 / ( utils.MU );
-        this.a = p / ( 1 - this.e ** 2 );
+        this.p = (this.h.clone().length() ** 2) / ( utils.MU );
         this.e = e.length();
+        this.a = this.p / ( 1 - this.e ** 2 );
         this.i = Math.acos( this.h.clone().z / this.h.clone().length() );
         this.raan = Math.acos( this.n.clone().x / this.n.clone().length() );
         if ( this.n.y < 0 ) {
@@ -189,11 +186,12 @@ class Satellite {
         if ( e.z < 0 ) {
             this.w = 2 * Math.PI - this.w;
         }
-        this.v_0 = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.clone().length() ) );
+        this.v_0 = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.clone().length() ) )
+                    + 1e-6;
         if ( this.posIJK.clone().dot( this.velIJK.clone() ) < 0 ) {
             this.v_0 = 2 * Math.PI - this.v_0;
         }
-        // console.log( "New", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
+
     }
 
     update() {
