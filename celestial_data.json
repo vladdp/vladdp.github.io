@@ -142,6 +142,33 @@
             "argperi": 29.124,
 
             "rotationPeriod": 35732.88
+        },
+
+        "Saturn": {
+            "name": "Saturn",
+            "type": "Planet",
+            "parent": "Sun",
+            "texture": "assets/saturn.jpg",
+            "ringTexture": "assets/saturn_rings.png",
+            "color": "bisque",
+
+            "mass": 568317e21,
+            "radius": 58232,
+            "a": 9.54149883,
+            "da": -0.00003065,
+            "e": 0.05550825,
+            "de": -0.00032044,
+            "i": 2.49424102,
+            "di": 0.00451969,
+            "L": 50.07571329,
+            "dL": 1222.11494724,
+            "lop": 92.86136063,
+            "dlop": 0.54179478,
+            "loan": 113.63998702,
+            "dloan": -0.25015002,
+            "argperi": 339.392,
+
+            "rotationPeriod": 38018
         }
         
     },

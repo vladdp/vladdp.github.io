@@ -34,6 +34,7 @@ bodies["Mercury"] = new Planet(data.Planet.Mercury);
 bodies["Venus"] = new Planet(data.Planet.Venus);
 bodies["Mars"] = new Planet(data.Planet.Mars);
 bodies["Jupiter"] = new Planet(data.Planet.Jupiter);
+bodies["Saturn"] = new Planet(data.Planet.Saturn);
 bodies["Moon"] = new Moon(data.Moon.Moon);
 bodies["Ganymede"] = new Moon(data.Moon.Ganymede);
 bodies["DeepSpace"] = new Satellite( 'DeepSpace', 'gold' );
@@ -46,6 +47,7 @@ scene.add( new THREE.HemisphereLight() );
 // const directionalLight = new THREE.DirectionalLight( 0xffeedd );
 // 				directionalLight.position.set( 0, 0, 2 );
 // 				scene.add( directionalLight );
+
 
 const fpsInterval = 1000 / 60;
 var now, then = performance.now();
@@ -172,6 +174,10 @@ export function getDate() {
 
 export function getT() {
     return ui.T;
+}
+
+export function getFPS() {
+    return fps;
 }
 
 export function getBodyPosition( body ) {

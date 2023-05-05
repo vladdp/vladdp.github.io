@@ -115,11 +115,6 @@ class CelestialBody {
 
     update() {
         this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
-
-        if ( this.type === "Moon") {
-            this.drawOrbit();
-            this.setPos();
-        }
     }
 
     updateElements( data ) {
@@ -167,24 +162,46 @@ class Planet extends CelestialBody {
         this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
         this.ellipse = new THREE.Line(
             this.ellipseGeometry,
-            new THREE.LineBasicMaterial( { color: this.color } )
+            new THREE.LineBasicMaterial( { 
+                color: this.color,
+                transparent: true,
+                opacity: 0.5,
+            } )
         );
         // this.ellipse.frustumCulled = false;
         this.ellipse.geometry.attributes.position.needsUpdate = true;
 
         this.SOIRadius = this.getSOIRadius();
-        this.SOISphere = new THREE.LineSegments(
-            new THREE.WireframeGeometry( 
-                new THREE.SphereGeometry( this.SOIRadius, 10, 10 )
-            ),
-            new THREE.LineBasicMaterial( { color: this.color } )
+        this.SOISphere = new THREE.Mesh(
+            new THREE.SphereGeometry( this.SOIRadius, 64, 64 ),
+            new THREE.MeshBasicMaterial({
+                wireframe: true,
+                color: this.color,
+                transparent: true,
+                opacity: 0.05,
+            })
         );
 
+        if ( this.name === "Saturn" ) {
+            this.ring = new THREE.Mesh(
+                new THREE.RingGeometry( 1.11*this.radius, 2.987*this.radius, 64),
+                new THREE.MeshBasicMaterial( { 
+                    color: this.color,
+                    transparent: true, 
+                    opacity: 0.9,
+                    // map: this.data.ringTexture,
+                } )
+            )
+
+            // main.addToScene( this.ring );
+            // this.ring.rotation.x += Math.PI / 2;
+        }
+        main.addToScene( this.SOISphere );
+        
         this.drawOrbit();
         this.setPos();
 
         // main.addToScene(this.ellipse);
-        main.addToScene( this.SOISphere );
     }
 
     setPos() {
@@ -208,6 +225,12 @@ class Planet extends CelestialBody {
         this.SOISphere.position.set( this.parentPos.x + this.pos[0].x, 
                                   this.parentPos.y + this.pos[0].y, 
                                   this.parentPos.z + this.pos[0].z );
+
+        if ( this.name === "Saturn" ) {
+            this.ring.position.set( this.parentPos.x + this.pos[0].x, 
+                this.parentPos.y + this.pos[0].y, 
+                this.parentPos.z + this.pos[0].z );
+        }
     }
 
     update() {
@@ -241,15 +264,61 @@ class Moon extends CelestialBody {
         this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
         this.ellipse = new THREE.Line(
             this.ellipseGeometry,
-            new THREE.LineBasicMaterial( { color: this.color } )
+            new THREE.LineBasicMaterial( { 
+                color: this.color,
+                transparent: true,
+                opacity: 0.5,
+            } )
         );
         // this.ellipse.frustumCulled = false;
         this.ellipse.geometry.attributes.position.needsUpdate = true;
+
+        this.SOIRadius = this.getSOIRadius();
+        this.SOISphere = new THREE.Mesh(
+            new THREE.SphereGeometry( this.SOIRadius, 64, 64 ),
+            new THREE.MeshBasicMaterial({
+                wireframe: true,
+                color: this.color,
+                transparent: true,
+                opacity: 0.05,
+            })
+        );
 
         this.drawOrbit();
         this.setPos();
 
         main.addToScene(this.ellipse);
+        main.addToScene( this.SOISphere );
+    }
+
+    setPos() {
+        this.pos = [];
+        this.p = this.a * ( 1-Math.pow(this.e, 2) );
+        this.r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
+
+        this.x = this.r * Math.cos( this.nu );
+        this.y = this.r * Math.sin( this.nu );
+        this.z = 0;
+        this.pos.push( new THREE.Vector3( this.x, this.y, this.z ) );
+
+        utils.rot_z( this.pos, this.argperi );
+        utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
+        utils.rot_y( this.pos, this.loan );
+
+        this.sphere.position.set( this.parentPos.x + this.pos[0].x, 
+                                  this.parentPos.y + this.pos[0].y, 
+                                  this.parentPos.z + this.pos[0].z );
+
+        this.SOISphere.position.set( this.parentPos.x + this.pos[0].x, 
+                                  this.parentPos.y + this.pos[0].y, 
+                                  this.parentPos.z + this.pos[0].z );
+    }
+
+    update() {
+        this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
+
+        this.drawOrbit();
+        this.setPos();
     }
 }
 

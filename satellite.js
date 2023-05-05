@@ -37,7 +37,7 @@ class Satellite {
 
         // this.parent = main.getFocus();
         this.parent = 'Earth';
-        this.parentPos = main.getBodyPosition( this.parent );
+        this.parentPos = main.getBodyPosition( this.parent ).clone();
 
         this.option = document.createElement('option');
         this.option.text = this.name;
@@ -58,11 +58,13 @@ class Satellite {
 
         this.loadModel();
 
-        this.ellipsePoints = [];
-        this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
+        let ellipsePoints = new Float32Array( this.resolution * 3 );
+        this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints( ellipsePoints );
         this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
         this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
+
+        this.drawOrbit();
 
         main.addToScene( this.ellipse );
     }
@@ -73,30 +75,30 @@ class Satellite {
         this.model = await loader.loadAsync( 'assets/models/deep_space/deep_space.glb' );
 
         main.addToScene( this.model.scene );
-
-        // this.model.scene.quaternion.set( this.q_0.x, this.q_0.y, this.q_0.z, this.q_0.w );
     }
 
     drawOrbit() {
-        this.ellipsePoints = [];
+        let ellipsePoints = [];
         this.p = this.a * (1-Math.pow(this.e, 2));
 
         for (var i=0; i < this.resolution; i++) {
             this.r[i] = this.p / ( 1 + this.e * Math.cos( this.theta[i] ) );
             this.x[i] = this.r[i] * Math.cos( this.theta[i] );
             this.y[i] = this.r[i] * Math.sin( this.theta[i] );
-            this.ellipsePoints.push( new THREE.Vector3( this.x[i], this.y[i], this.z[i] ));
+            ellipsePoints.push( new THREE.Vector3( this.x[i], this.y[i], this.z[i] ));
         }
 
-        utils.rot_z( this.ellipsePoints, this.w );
-        utils.rot_x( this.ellipsePoints, -(Math.PI / 2) + this.i );
-        utils.rot_y( this.ellipsePoints, this.raan );
+        utils.rot_z( ellipsePoints, this.w );
+        utils.rot_x( ellipsePoints, -(Math.PI / 2) + this.i );
+        utils.rot_y( ellipsePoints, this.raan );
+
+        this.parentPos = main.getBodyPosition( this.parent ).clone();
         
-        for (let i = 0; i < this.ellipsePoints.length; i++) {
-            this.ellipsePoints[i].add( this.parentPos );
+        for (let i = 0; i < ellipsePoints.length; i++) {
+            ellipsePoints[i].add( this.parentPos );
         }
 
-        this.ellipseGeometry.setFromPoints( this.ellipsePoints );
+        this.ellipseGeometry.setFromPoints( ellipsePoints );
         this.ellipse.geometry.computeBoundingSphere();
     }
 
@@ -116,9 +118,11 @@ class Satellite {
         utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
         utils.rot_y( this.pos, this.raan );
 
-        this.model.scene.position.set( this.parentPos.x + this.pos[0].x, 
-                                this.parentPos.y + this.pos[0].y,
-                                this.parentPos.z + this.pos[0].z );
+        let parentPos = main.getBodyPosition( this.parent );
+
+        this.model.scene.position.set( parentPos.x + this.pos[0].x, 
+                                parentPos.y + this.pos[0].y,
+                                parentPos.z + this.pos[0].z );
 
         this.posIJK.set( this.pos[0].x, -this.pos[0].z, this.pos[0].y);    
     }
@@ -131,8 +135,8 @@ class Satellite {
         this.v_y = this.nup * ( parseFloat(this.e) + Math.cos( this.v_0 ) );
         this.v_z = 0;
 
-        this.nx = this.pos_x + this.v_x * (this.simSpeed / 60);
-        this.ny = this.pos_y + this.v_y * (this.simSpeed / 60);
+        this.nx = this.pos_x + this.v_x * (this.simSpeed / main.getFPS());
+        this.ny = this.pos_y + this.v_y * (this.simSpeed / main.getFPS());
 
         this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
 
@@ -141,14 +145,16 @@ class Satellite {
         } else {
             this.v_0 = 2*Math.PI - Math.acos( this.nx / this.nr );
         }
-
+        
         this.v.push( new THREE.Vector3( this.v_x, this.v_y, this.v_z ) );
-
+        
         utils.rot_z( this.v, this.w );
         utils.rot_x( this.v, -(Math.PI / 2) + this.i );
         utils.rot_y( this.v, this.raan );
-
+        
         this.velIJK.set( this.v[0].x, -this.v[0].z, this.v[0].y);
+
+        // console.log( "Calc vel: ", this.velIJK );
     }
 
     applyThrust() {
@@ -157,11 +163,11 @@ class Satellite {
         
         this.acc = dir.clone().multiplyScalar( ( (this.thrust * this.thrustLevel) / this.mass) / 1000 );
         this.accIJK.set( this.acc.x, -this.acc.z, this.acc.y )
-        // console.log( "a: ", this.accIJK );
+        console.log( "a: ", this.accIJK );
         
-        this.velIJK.add( this.accIJK.clone().divideScalar( 60 / this.simSpeed ) );
-        // console.log( "r: ", this.posIJK );
-        // console.log( "v: ", this.velIJK );
+        this.velIJK.add( this.accIJK.clone().divideScalar( main.getFPS() ) );
+        console.log( "r: ", this.posIJK );
+        console.log( "v: ", this.velIJK );
         
         this.h.crossVectors( this.posIJK.clone(), this.velIJK.clone() );
         
@@ -170,7 +176,7 @@ class Satellite {
         let e = this.posIJK.clone().multiplyScalar( this.velIJK.clone().length() ** 2 - utils.MU / this.posIJK.clone().length() ).sub(
             this.velIJK.clone().multiplyScalar( this.posIJK.clone().dot( this.velIJK.clone() ) ) ).divideScalar( utils.MU );
    
-        console.log( "Last: ", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
+        // console.log( "Last: ", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
         let p = this.h.clone().length() ** 2 / ( utils.MU );
         this.a = p / ( 1 - this.e ** 2 );
         this.e = e.length();
@@ -187,11 +193,11 @@ class Satellite {
         if ( this.posIJK.clone().dot( this.velIJK.clone() ) < 0 ) {
             this.v_0 = 2 * Math.PI - this.v_0;
         }
-        console.log( "New", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
+        // console.log( "New", this.a, this.e, utils.toDegrees(this.i), utils.toDegrees(this.raan), utils.toDegrees(this.w), utils.toDegrees(this.v_0) );
     }
 
     update() {
-        if ( this.thrustLevel > 0 ) {
+        if ( this.thrustLevel > 0 && this.simSpeed === 1 ) {
             this.applyThrust();
         }
         
