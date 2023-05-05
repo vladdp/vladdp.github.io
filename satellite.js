@@ -81,9 +81,6 @@ class Satellite {
         let ellipsePoints = [];
         this.p = this.a * (1-Math.pow(this.e, 2));
 
-        console.log("a: ", this.a, "e: ", this.e, "i: ", this.i, "raan: ", this.raan, "w: ", this.w);
-        console.log( "v_0: ", this.v_0 );
-
         for (var i=0; i < this.resolution; i++) {
             this.r[i] = this.p / ( 1 + this.e * Math.cos( this.theta[i] ) );
             this.x[i] = this.r[i] * Math.cos( this.theta[i] );
