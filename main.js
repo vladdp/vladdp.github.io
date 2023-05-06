@@ -37,6 +37,8 @@ bodies["Jupiter"] = new Planet(data.Planet.Jupiter);
 bodies["Saturn"] = new Planet(data.Planet.Saturn);
 bodies["Moon"] = new Moon(data.Moon.Moon);
 bodies["Ganymede"] = new Moon(data.Moon.Ganymede);
+bodies["Io"] = new Moon(data.Moon.Io);
+bodies["Europa"] = new Moon(data.Moon.Europa);
 bodies["DeepSpace"] = new Satellite( 'DeepSpace', 'gold' );
 
 setFocus("Earth");

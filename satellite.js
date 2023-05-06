@@ -163,7 +163,9 @@ class Satellite {
         this.acc = dir.clone().multiplyScalar( ( (this.thrust * this.thrustLevel) / this.mass) / 1000 );
         this.accIJK.set( this.acc.x, -this.acc.z, this.acc.y )
 
+        console.log( "Before: ", this.velIJK )
         this.velIJK.add( this.accIJK.clone().divideScalar( main.getFPS() ) );
+        console.log( "After: ", this.velIJK )
         
         this.h.crossVectors( this.posIJK.clone(), this.velIJK.clone() );
         this.n.crossVectors( this.K.clone(), this.h.clone() );
@@ -171,6 +173,8 @@ class Satellite {
         let e = this.posIJK.clone().multiplyScalar( this.velIJK.clone().length() ** 2 - utils.MU / this.posIJK.clone().length() ).sub(
             this.velIJK.clone().multiplyScalar( this.posIJK.clone().dot( this.velIJK.clone() ) ) ).divideScalar( utils.MU );
    
+        console.log( "a: ", this.a, "e: ", this.e, "i: ", this.i, "raan: ", this.raan, "w: ", this.w, "v_0: ", this.v_0 );
+
         this.p = (this.h.clone().length() ** 2) / ( utils.MU );
         this.e = e.length();
         this.a = this.p / ( 1 - this.e ** 2 );
@@ -189,6 +193,10 @@ class Satellite {
             this.v_0 = 2 * Math.PI - this.v_0;
         }
 
+        console.log( this.posIJK.clone().dot( this.velIJK.clone() ) );
+        console.log( "a: ", this.a, "e: ", this.e, "i: ", this.i, "raan: ", this.raan, "w: ", this.w, "v_0: ", this.v_0 );
+
+        this.updateTrueAnomaly();
     }
 
     update() {

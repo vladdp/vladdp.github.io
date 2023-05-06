@@ -201,6 +201,33 @@
             "rotationPeriod": 618153.38
             
         },
+
+        "Io": {
+            "name": "Io",
+            "type": "Moon",
+            "parent": "Jupiter",
+            "texture": "assets/io.jpg",
+            "color": "goldenrod",
+
+            "mass": 8.932e22,
+            "radius": 1821.6,
+            "a": 0.002819,
+            "da": 0,
+            "e": 0.0041,
+            "de": 0,
+            "i": 2.213,
+            "di": 0,
+            "L": 0.001,
+            "dL": 0,
+            "lop": 0.001,
+            "dlop": 0,
+            "loan": 0.001,
+            "dloan": 0,
+            "argperi": 0,
+            
+            "rotationPeriod": 152853.5
+            
+        },
         
         "Moon": {
             "name": "Moon",
@@ -227,6 +254,33 @@
 
             "rotationPeriod": 2360591.51
 
+        },
+
+        "Europa": {
+            "name": "Europa",
+            "type": "Moon",
+            "parent": "Jupiter",
+            "texture": "assets/europa.jpg",
+            "color": "ghostwhite",
+
+            "mass": 4.8e22,
+            "radius": 1560.8,
+            "a": 0.004484689,
+            "da": 0,
+            "e": 0.009,
+            "de": 0,
+            "i": 1.791,
+            "di": 0,
+            "L": 0.001,
+            "dL": 0,
+            "lop": 0.001,
+            "dlop": 0,
+            "loan": 0.001,
+            "dloan": 0,
+            "argperi": 0,
+            
+            "rotationPeriod": 306822
+            
         }
 
     }
