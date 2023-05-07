@@ -57,21 +57,23 @@ var fps, oldTimeStamp=0, secondsPassed, elapsed, inc;
 let bodyPos0, bodyPos1, dbodyPos = new THREE.Vector3();
 
 function animate( timeStamp ) {
-    requestAnimationFrame(animate);
+    requestAnimationFrame( animate );
     
     now = performance.now();
     elapsed = timeStamp - then;
     
-    secondsPassed = (timeStamp - oldTimeStamp) / 1000;
     
-    fps = Math.round( 1 / secondsPassed );
     
     if ( elapsed >= fpsInterval ) {
         then = timeStamp - ( elapsed % fpsInterval );
         bodyPos0 = bodies[ui.focusList.value].getPosition().clone();
+
+        secondsPassed = ( performance.now() - oldTimeStamp ) / 1000;
+    
+        fps = Math.round( 1 / secondsPassed );
         
         ui.updateFPS( fps );
-        ui.updateDate( (performance.now() - oldTimeStamp) * simSpeed );
+        ui.updateDate( secondsPassed * simSpeed );
         
         for (var body in bodies) {
             bodies[body].update();

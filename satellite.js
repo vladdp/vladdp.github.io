@@ -11,6 +11,7 @@ class Satellite {
     i = 0;
     raan = 0;
     w = 0;
+    raanw = 0;
     v_0 = 0;
 
     thrust = 1000;
@@ -109,22 +110,22 @@ class Satellite {
         this.pos_x = this.pos_r * Math.cos( this.v_0 );
         this.pos_y = this.pos_r * Math.sin( this.v_0 );
         this.pos_z = 0;
-
-        this.updateTrueAnomaly();
         
         this.pos.push( new THREE.Vector3( this.pos_x, this.pos_y, this.pos_z ) );
         
         utils.rot_z( this.pos, this.w );
         utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
         utils.rot_y( this.pos, this.raan );
+        
+        this.posIJK.set( this.pos[0].x, -this.pos[0].z, this.pos[0].y);
+
+        this.updateTrueAnomaly();
 
         let parentPos = main.getBodyPosition( this.parent );
 
         this.model.scene.position.set( parentPos.x + this.pos[0].x, 
                                 parentPos.y + this.pos[0].y,
                                 parentPos.z + this.pos[0].z );
-
-        this.posIJK.set( this.pos[0].x, -this.pos[0].z, this.pos[0].y);    
     }
     
     updateTrueAnomaly() {
@@ -135,16 +136,16 @@ class Satellite {
         this.v_y = this.nup * ( this.e + Math.cos( this.v_0 ) );
         this.v_z = 0;
 
-        this.nx = this.pos_x + this.v_x * (this.simSpeed / main.getFPS());
-        this.ny = this.pos_y + this.v_y * (this.simSpeed / main.getFPS());
+        this.nx = this.pos_x + this.v_x * ( this.simSpeed / this.fps );
+        this.ny = this.pos_y + this.v_y * ( this.simSpeed / this.fps );
 
         this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
 
         if ( this.ny > 0 ) {
             this.v_0 = Math.acos( this.nx / this.nr );
         } else {
-            this.v_0 = 2*Math.PI - Math.acos( this.nx / this.nr );
-        }
+            this.v_0 = 2 * Math.PI - Math.acos( this.nx / this.nr );
+        }        
         
         this.v.push( new THREE.Vector3( this.v_x, this.v_y, this.v_z ) );
         
@@ -160,52 +161,55 @@ class Satellite {
         let dir = new THREE.Vector3( 0, 1, 0 );
         dir.applyQuaternion( this.getQuaternion() );
         
-        this.acc = dir.clone().multiplyScalar( ( (this.thrust * this.thrustLevel) / this.mass) / 1000 );
+        this.acc = dir.clone().multiplyScalar( ( ( this.thrust * this.thrustLevel ) / this.mass ) / 1000 );
         this.accIJK.set( this.acc.x, -this.acc.z, this.acc.y )
 
-        console.log( "Before: ", this.velIJK )
-        this.velIJK.add( this.accIJK.clone().divideScalar( main.getFPS() ) );
-        console.log( "After: ", this.velIJK )
-        
+        this.velIJK.add( this.accIJK.clone().divideScalar( this.fps ) );
+
         this.h.crossVectors( this.posIJK.clone(), this.velIJK.clone() );
         this.n.crossVectors( this.K.clone(), this.h.clone() );
         
-        let e = this.posIJK.clone().multiplyScalar( this.velIJK.clone().length() ** 2 - utils.MU / this.posIJK.clone().length() ).sub(
+        let e = this.posIJK.clone().multiplyScalar( this.velIJK.length() ** 2 - utils.MU / this.posIJK.length() ).sub(
             this.velIJK.clone().multiplyScalar( this.posIJK.clone().dot( this.velIJK.clone() ) ) ).divideScalar( utils.MU );
    
-        console.log( "a: ", this.a, "e: ", this.e, "i: ", this.i, "raan: ", this.raan, "w: ", this.w, "v_0: ", this.v_0 );
-
-        this.p = (this.h.clone().length() ** 2) / ( utils.MU );
+        this.p = (this.h.length() ** 2) / ( utils.MU );
         this.e = e.length();
         this.a = this.p / ( 1 - this.e ** 2 );
-        this.i = Math.acos( this.h.clone().z / this.h.clone().length() );
-        this.raan = Math.acos( this.n.clone().x / this.n.clone().length() );
+        this.i = Math.acos( this.h.z / this.h.length() );
+        this.raan = Math.acos( this.n.x / this.n.length() );
         if ( this.n.y < 0 ) {
             this.raan = 2 * Math.PI - this.raan;
         }
-        this.w = Math.acos( this.n.clone().dot( e.clone() ) / ( this.n.clone().length() * this.e ) );
+        this.w = Math.acos( this.n.clone().dot( e.clone() ) / ( this.n.length() * this.e ) );
         if ( e.z < 0 ) {
             this.w = 2 * Math.PI - this.w;
         }
-        this.v_0 = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.clone().length() ) )
-                    + 1e-6;
+        this.v_0 = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.length() ) )
+                    + 1e-5;
         if ( this.posIJK.clone().dot( this.velIJK.clone() ) < 0 ) {
             this.v_0 = 2 * Math.PI - this.v_0;
         }
 
-        console.log( this.posIJK.clone().dot( this.velIJK.clone() ) );
-        console.log( "a: ", this.a, "e: ", this.e, "i: ", this.i, "raan: ", this.raan, "w: ", this.w, "v_0: ", this.v_0 );
+        let parentPos = main.getBodyPosition( this.parent );
 
-        this.updateTrueAnomaly();
+        this.posIJK.addScaledVector( this.velIJK, 1 / this.fps );
+
+        this.model.scene.position.set( parentPos.x + this.posIJK.x, 
+                                parentPos.y + this.posIJK.z,
+                                parentPos.z - this.posIJK.y );
     }
 
     update() {
+        this.fps = main.getFPS();
+        
         if ( this.thrustLevel > 0 && this.simSpeed === 1 ) {
             this.applyThrust();
+            this.drawOrbit();
+        } else {
+            this.drawOrbit();
+            this.setPos();
         }
         
-        this.drawOrbit();
-        this.setPos();
         main.updateParams( this );
     }
 
