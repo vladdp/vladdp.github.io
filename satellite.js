@@ -35,6 +35,7 @@ class Satellite {
         this.color = color;
         this.option = document.createElement('option');
         this.option.text = this.name;
+        this.fps = 60;
 
         // this.parent = main.getFocus();
         this.parent = 'Earth';
@@ -154,7 +155,6 @@ class Satellite {
         utils.rot_y( this.v, this.raan );
         
         this.velIJK.set( this.v[0].x, -this.v[0].z, this.v[0].y);
-
     }
 
     applyThrust() {
@@ -200,8 +200,6 @@ class Satellite {
     }
 
     update() {
-        this.fps = main.getFPS();
-        
         if ( this.thrustLevel > 0 && this.simSpeed === 1 ) {
             this.applyThrust();
             this.drawOrbit();
@@ -243,6 +241,10 @@ class Satellite {
 
     setSimSpeed( simSpeed ) {
         this.simSpeed = simSpeed;
+    }
+
+    setFPS( fps ) {
+        this.fps = fps;
     }
 
     roll( dir ) {

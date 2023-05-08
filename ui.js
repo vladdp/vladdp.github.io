@@ -179,16 +179,10 @@ class UI {
     }
 
     updateAttitude( satellite ) {
-        // this.r_x.innerText = "x: " + satellite.getPositionRelativeToParent().x.toFixed(2).toString();
-        // this.r_y.innerText = "y: " + satellite.getPositionRelativeToParent().y.toFixed(2).toString();
-        // this.r_z.innerText = "z: " + satellite.getPositionRelativeToParent().z.toFixed(2).toString();
         this.r_x.innerText = "x: " + satellite.getPositionIJK().x.toFixed(2).toString();
         this.r_y.innerText = "y: " + satellite.getPositionIJK().y.toFixed(2).toString();
         this.r_z.innerText = "z: " + satellite.getPositionIJK().z.toFixed(2).toString();
 
-        // this.v_x.innerText = "x: " + satellite.getVelocity().x.toFixed(3).toString();
-        // this.v_y.innerText = "y: " + satellite.getVelocity().y.toFixed(3).toString();
-        // this.v_z.innerText = "z: " + satellite.getVelocity().z.toFixed(3).toString();
         this.v_x.innerText = "x: " + satellite.getVelocityIJK().x.toFixed(3).toString();
         this.v_y.innerText = "y: " + satellite.getVelocityIJK().y.toFixed(3).toString();
         this.v_z.innerText = "z: " + satellite.getVelocityIJK().z.toFixed(3).toString();

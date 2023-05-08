@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 
-// import { addToScene, setCameraPos } from 'main';
 import * as main from 'main';
 import * as utils from 'utils';
 
@@ -26,13 +25,22 @@ class CelestialBody {
         this.option.text = data.name;
         this.option.value = data.name;
 
-        this.sphere = new THREE.Mesh(
-            new THREE.SphereGeometry( this.radius, 64, 64 ),
-            new THREE.MeshBasicMaterial({
-                map: new THREE.TextureLoader().load( this.texture ),
-            })
-        );
-
+        if ( this.type === "Planet" || this.type === "Moon" ) {
+            this.sphere = new THREE.Mesh(
+                new THREE.SphereGeometry( this.radius, 64, 64 ),
+                new THREE.MeshStandardMaterial({
+                    map: new THREE.TextureLoader().load( this.texture ),
+                })
+            );
+        } else {
+            this.sphere = new THREE.Mesh(
+                new THREE.SphereGeometry( this.radius, 64, 64 ),
+                new THREE.MeshBasicMaterial({
+                    map: new THREE.TextureLoader().load( this.texture ),
+                })
+            );
+        }
+        
         main.addFocus(this.option);
         main.addToScene(this.sphere);
     }
@@ -148,6 +156,10 @@ class CelestialBody {
     setSimSpeed( simSpeed ) {
         this.simSpeed = simSpeed;
     }
+
+    setFPS( fps ) {
+        this.fps = fps;
+    }
 }
 
 class Planet extends CelestialBody {
@@ -248,6 +260,7 @@ class Moon extends CelestialBody {
 
     constructor( data ) {
         super( data );
+        this.fps = 60;
 
         this.parentPos = main.getBodyPosition( this.parent );
 
@@ -258,7 +271,7 @@ class Moon extends CelestialBody {
         this.lop = ( utils.toRadians( data.lop ) + utils.toRadians( data.dlop ) * this.T ) % (2*Math.PI);
         this.loan = utils.toRadians( data.loan ) + utils.toRadians( data.dloan ) * this.T;
         this.argperi = this.lop - this.loan;
-        this.nu = 0;
+        this.nu = Math.random() * ( 2 * Math.PI );
 
         this.ellipsePoints = [];
         this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints(this.ellipsePoints);
@@ -285,7 +298,6 @@ class Moon extends CelestialBody {
         );
 
         this.drawOrbit();
-        this.setPos();
 
         main.addToScene(this.ellipse);
         main.addToScene( this.SOISphere );
@@ -293,7 +305,7 @@ class Moon extends CelestialBody {
 
     setPos() {
         this.pos = [];
-        this.p = this.a * ( 1-Math.pow(this.e, 2) );
+        this.p = this.a * ( 1 - Math.pow( this.e, 2 ) );
         this.r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
 
         this.x = this.r * Math.cos( this.nu );
@@ -305,6 +317,8 @@ class Moon extends CelestialBody {
         utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
         utils.rot_y( this.pos, this.loan );
 
+        this.updateTrueAnomaly();
+
         this.sphere.position.set( this.parentPos.x + this.pos[0].x, 
                                   this.parentPos.y + this.pos[0].y, 
                                   this.parentPos.z + this.pos[0].z );
@@ -314,8 +328,28 @@ class Moon extends CelestialBody {
                                   this.parentPos.z + this.pos[0].z );
     }
 
+    updateTrueAnomaly() {
+        this.v = []
+        this.nup = Math.sqrt( utils.MU / this.p );
+
+        this.v_x = this.nup * -Math.sin( this.nu );
+        this.v_y = this.nup * ( this.e + Math.cos( this.nu ) );
+
+        this.nx = this.x + this.v_x * ( this.simSpeed / this.fps );
+        this.ny = this.y + this.v_y * ( this.simSpeed / this.fps );
+
+        this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
+
+        if ( this.ny > 0 ) {
+            this.nu = Math.acos( this.nx / this.nr );
+        } else {
+            this.nu = 2 * Math.PI - Math.acos( this.nx / this.nr );
+        }        
+        
+    }
+
     update() {
-        this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
+        this.sphere.rotation.y += this.rotationAngle * ( this.simSpeed / this.fps );
 
         this.drawOrbit();
         this.setPos();
