@@ -41,8 +41,8 @@ class CelestialBody {
             );
         }
         
-        main.addFocus(this.option);
-        main.addToScene(this.sphere);
+        main.addBodyFocus( this.option );
+        main.addToScene( this.sphere );
     }
 
     calculateE() {
@@ -299,7 +299,7 @@ class Moon extends CelestialBody {
 
         this.drawOrbit();
 
-        main.addToScene(this.ellipse);
+        main.addToScene( this.ellipse );
         main.addToScene( this.SOISphere );
     }
 

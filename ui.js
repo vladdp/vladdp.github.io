@@ -8,127 +8,183 @@ class UI {
         this.title.innerText = "ThreeJSat";
         this.title.id = 'title';
         document.body.appendChild( this.title );
-        
+
+        this.tabs = document.createElement('div');
+        this.tabs.className = 'tab';
+        this.tabs.id = 'tabs';
+        document.body.appendChild( this.tabs );
+
+        this.infoTab = document.createElement('button');
+        this.infoTab.className = 'tablinks';
+        this.infoTab.innerText = 'Info';
+        this.infoTab.id = 'infoTab';
+        this.infoTab.addEventListener( 'click', () => this.openTab( 'infoTab', 'infoTabContent' ) );
+        this.tabs.appendChild( this.infoTab );
+
+        this.focusTab = document.createElement('button');
+        this.focusTab.className = 'tablinks';
+        this.focusTab.innerText = 'Focus';
+        this.focusTab.id = 'focusTab';
+        this.focusTab.addEventListener( 'click', () => this.openTab( 'focusTab', 'focusTabContent' ) );
+        this.tabs.appendChild( this.focusTab );
+
+        this.addTab = document.createElement('button');
+        this.addTab.className = 'tablinks';
+        this.addTab.innerText = 'Add';
+        this.addTab.id = 'addTab';
+        this.addTab.addEventListener( 'click', () => this.openTab( 'addTab', 'addTabContent' ) );
+        this.tabs.appendChild( this.addTab );
+
+        this.infoTabContent = document.createElement('div');
+        this.infoTabContent.className = 'tabcontent';
+        this.infoTabContent.id = 'infoTabContent';
+        document.body.appendChild( this.infoTabContent );
+
+        this.focusTabContent = document.createElement('div');
+        this.focusTabContent.className = 'tabcontent';
+        this.focusTabContent.id = 'focusTabContent';
+        document.body.appendChild( this.focusTabContent );
+
+        this.addTabContent = document.createElement('div');
+        this.addTabContent.className = 'tabcontent';
+        this.addTabContent.id = 'addTabContent';
+        document.body.appendChild( this.addTabContent );
+
         this.addSatButt = document.createElement('button');
         this.addSatButt.innerText = "Add Satellite";
         this.addSatButt.id = 'addSatButt';
         this.addSatButt.addEventListener( 'click', () => this.addSat() );
-        document.body.appendChild( this.addSatButt );
+        this.addTabContent.appendChild( this.addSatButt );
         
         this.simSpeed = document.createElement('text');
         this.simSpeed.innerText = "Sim Speed: x";
         this.simSpeed.id = "simSpeed";
         document.body.appendChild( this.simSpeed );
 
-        this.focus = document.createElement('text');
-        this.focus.innerText = "Focus";
-        this.focus.id = "focus";
-        document.body.appendChild( this.focus );
+        this.body = document.createElement('text');
+        this.body.innerText = "Body: ";
+        this.body.id = "body";
+        this.focusTabContent.appendChild( this.body );
         
-        this.focusList = document.createElement('select');
-        this.focusList.id = 'focusList';
-        this.focusList.addEventListener( "change", () => this.changeFocus() );
-        document.body.appendChild( this.focusList) ;
+        this.bodyFocusList = document.createElement('select');
+        this.bodyFocusList.id = 'bodyFocusList';
+        this.focusTabContent.appendChild( this.bodyFocusList);
 
-        this.orbitalParams = document.createElement('text');
-        this.orbitalParams.innerText = "Orbital Parameters";
-        this.orbitalParams.id = "orbParams";
-        document.body.appendChild(this.orbitalParams);
+        this.bodyFocusButt = document.createElement('button');
+        this.bodyFocusButt.innerText = 'Set Focus';
+        this.bodyFocusButt.id = 'bodyFocusButt';
+        this.bodyFocusButt.addEventListener( 'click', () => this.changeBodyFocus() );
+        this.focusTabContent.appendChild( this.bodyFocusButt);
+
+        this.sat = document.createElement('text');
+        this.sat.innerText = "Sat: ";
+        this.sat.id = "sat";
+        this.focusTabContent.appendChild( this.sat );
+        
+        this.satFocusList = document.createElement('select');
+        this.satFocusList.id = 'satFocusList';
+        this.focusTabContent.appendChild( this.satFocusList);
+
+        this.satFocusButt = document.createElement('button');
+        this.satFocusButt.innerText = 'Set Focus';
+        this.satFocusButt.id = 'satFocusButt';
+        this.satFocusButt.addEventListener( 'click', () => this.changeSatFocus() );
+        this.focusTabContent.appendChild( this.satFocusButt);
 
         this.semiMajor = document.createElement('text');
         this.semiMajor.innerText = "a: ";
         this.semiMajor.id = "semiMajor";
-        document.body.appendChild(this.semiMajor);
+        this.infoTabContent.appendChild( this.semiMajor );
 
         this.eccentricity = document.createElement('text');
         this.eccentricity.innerText = "e: ";
         this.eccentricity.id = "eccentricity";
-        document.body.appendChild(this.eccentricity);
+        this.infoTabContent.appendChild( this.eccentricity );
 
         this.inclination = document.createElement('text');
         this.inclination.innerText = "i: ";
         this.inclination.id = "inclination";
-        document.body.appendChild(this.inclination);
+        this.infoTabContent.appendChild( this.inclination );
 
         this.raan = document.createElement('text');
         this.raan.innerText = "Ω: ";
         this.raan.id = "raan";
-        document.body.appendChild(this.raan);
+        this.infoTabContent.appendChild( this.raan );
 
         this.argPer = document.createElement('text');
         this.argPer.innerText = "ω: ";
         this.argPer.id = "argPer";
-        document.body.appendChild(this.argPer);
+        this.infoTabContent.appendChild( this.argPer );
 
         this.trueAnomaly = document.createElement('text');
         this.trueAnomaly.innerText = "ν:";
         this.trueAnomaly.id = "trueAnomaly";
-        document.body.appendChild(this.trueAnomaly);
+        this.infoTabContent.appendChild( this.trueAnomaly );
 
         this.position = document.createElement('text');
         this.position.innerText = 'position [km]';
         this.position.id = 'position';
-        document.body.appendChild(this.position);
+        this.infoTabContent.appendChild( this.position );
 
         this.r_x = document.createElement('text');
         this.r_x.innerText = 'x: ';
         this.r_x.id = 'r_x';
-        document.body.appendChild(this.r_x);
+        this.infoTabContent.appendChild(this.r_x);
 
         this.r_y = document.createElement('text');
         this.r_y.innerText = 'y: ';
         this.r_y.id = 'r_y';
-        document.body.appendChild(this.r_y);
+        this.infoTabContent.appendChild(this.r_y);
 
         this.r_z = document.createElement('text');
         this.r_z.innerText = 'z: ';
         this.r_z.id = 'r_z';
-        document.body.appendChild(this.r_z);
+        this.infoTabContent.appendChild(this.r_z);
 
         this.velocity = document.createElement('text');
         this.velocity.innerText = 'velocity [km/s]';
         this.velocity.id = 'velocity';
-        document.body.appendChild(this.velocity);
+        this.infoTabContent.appendChild(this.velocity);
 
         this.v_x = document.createElement('text');
         this.v_x.innerText = 'x: ';
         this.v_x.id = 'v_x';
-        document.body.appendChild(this.v_x);
+        this.infoTabContent.appendChild(this.v_x);
 
         this.v_y = document.createElement('text');
         this.v_y.innerText = 'y: ';
         this.v_y.id = 'v_y';
-        document.body.appendChild(this.v_y);
+        this.infoTabContent.appendChild(this.v_y);
 
         this.v_z = document.createElement('text');
         this.v_z.innerText = 'z: ';
         this.v_z.id = 'v_z';
-        document.body.appendChild(this.v_z);
+        this.infoTabContent.appendChild(this.v_z);
 
-        this.quaternion = document.createElement('text');
-        this.quaternion.innerText = 'quaternion';
-        this.quaternion.id = 'quaternion';
-        document.body.appendChild(this.quaternion);
+        // this.quaternion = document.createElement('text');
+        // this.quaternion.innerText = 'quaternion';
+        // this.quaternion.id = 'quaternion';
+        // this.infoTabContent.appendChild(this.quaternion);
 
-        this.q_x = document.createElement('text');
-        this.q_x.innerText = 'x: ';
-        this.q_x.id = 'q_x';
-        document.body.appendChild(this.q_x);
+        // this.q_x = document.createElement('text');
+        // this.q_x.innerText = 'x: ';
+        // this.q_x.id = 'q_x';
+        // this.infoTabContent.appendChild(this.q_x);
 
-        this.q_y = document.createElement('text');
-        this.q_y.innerText = 'y: ';
-        this.q_y.id = 'q_y';
-        document.body.appendChild(this.q_y);
+        // this.q_y = document.createElement('text');
+        // this.q_y.innerText = 'y: ';
+        // this.q_y.id = 'q_y';
+        // this.infoTabContent.appendChild(this.q_y);
 
-        this.q_z = document.createElement('text');
-        this.q_z.innerText = 'z: ';
-        this.q_z.id = 'q_z';
-        document.body.appendChild(this.q_z);
+        // this.q_z = document.createElement('text');
+        // this.q_z.innerText = 'z: ';
+        // this.q_z.id = 'q_z';
+        // this.infoTabContent.appendChild(this.q_z);
 
-        this.q_w = document.createElement('text');
-        this.q_w.innerText = 'w: ';
-        this.q_w.id = 'q_w';
-        document.body.appendChild(this.q_w);
+        // this.q_w = document.createElement('text');
+        // this.q_w.innerText = 'w: ';
+        // this.q_w.id = 'q_w';
+        // this.infoTabContent.appendChild(this.q_w);
 
         this.thrust = document.createElement('text');
         this.thrust.innerText = 'Thrust: ';
@@ -170,12 +226,47 @@ class UI {
         this.update();
     }
 
-    addFocus( object ) {
-        this.focusList.add( object );
+    addBodyFocus( object ) {
+        this.bodyFocusList.add( object );
     }
 
-    changeFocus() {
-        main.setFocus( this.focusList.value );
+    addSatFocus( object ) {
+        this.satFocusList.add( object );
+    }
+
+    changeBodyFocus() {
+        main.setFocus( this.bodyFocusList.value );
+    }
+
+    changeSatFocus() {
+        main.setFocus( this.satFocusList.value );
+    }
+
+    openTab( tabName, contentName ) {
+
+        if ( !document.getElementById( contentName ).checkVisibility() ) {
+            var i, tabcontent, tablinks;
+
+            tabcontent = document.getElementsByClassName( "tabcontent" );
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+    
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+    
+            document.getElementById( contentName ).style.display = "block";
+            document.getElementById( tabName ).className += " active";
+
+        } else {
+
+            document.getElementById( contentName ).style.display = "none";
+            document.getElementById( tabName ).className = "tablinks";
+
+        }
+
     }
 
     updateAttitude( satellite ) {
@@ -187,10 +278,10 @@ class UI {
         this.v_y.innerText = "y: " + satellite.getVelocityIJK().y.toFixed(3).toString();
         this.v_z.innerText = "z: " + satellite.getVelocityIJK().z.toFixed(3).toString();
 
-        this.q_x.innerText = "x:  " + satellite.getQuaternion().x.toFixed(6).toString();
-        this.q_y.innerText = "y:  " + satellite.getQuaternion().y.toFixed(6).toString();
-        this.q_z.innerText = "z:  " + satellite.getQuaternion().z.toFixed(6).toString();
-        this.q_w.innerText = "w: " + satellite.getQuaternion().w.toFixed(6).toString();
+        // this.q_x.innerText = "x:  " + satellite.getQuaternion().x.toFixed(6).toString();
+        // this.q_y.innerText = "y:  " + satellite.getQuaternion().y.toFixed(6).toString();
+        // this.q_z.innerText = "z:  " + satellite.getQuaternion().z.toFixed(6).toString();
+        // this.q_w.innerText = "w: " + satellite.getQuaternion().w.toFixed(6).toString();
     }
 
     updateParams( satellite ) {

@@ -1,9 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import 'jquery';
-import 'jquery-ui';
-
 import { CelestialBody, Planet, Moon } from 'celestials';
 import { Satellite } from 'sat';
 import data from 'celestial_data' assert { type: 'json'};
@@ -41,12 +38,12 @@ const attitudeIndicator = new THREE.Mesh(
     })
 );
 
-attitudeIndicatorCamera.position.set( 13, 13, 13 );
+attitudeIndicatorCamera.position.set( 0, 0, 20 );
 
 attitudeIndicatorScene.add( attitudeIndicator );
 const attitudeIndicatorControls = new OrbitControls( attitudeIndicatorCamera, attitudeIndicatorRenderer.domElement );
 attitudeIndicatorControls.update();
-
+attitudeIndicatorControls.enabled = false;
 
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.enablePan = false;
@@ -67,8 +64,9 @@ bodies["Io"] = new Moon( data.Moon.Io );
 bodies["Europa"] = new Moon( data.Moon.Europa );
 bodies["DeepSpace"] = new Satellite( 'DeepSpace', 'gold' );
 
-setFocus("Earth");
-ui.focusList.value = "Earth";
+var currentFocus = "Earth";
+setFocus( currentFocus );
+ui.bodyFocusList.value = "Earth";
 
 const sunLight = new THREE.PointLight( "white", 1 );
 scene.add( sunLight );
@@ -86,7 +84,7 @@ function animate( timeStamp ) {
     
     if ( elapsed >= fpsInterval ) {
         then = timeStamp - ( elapsed % fpsInterval );
-        bodyPos0 = bodies[ui.focusList.value].getPosition().clone();
+        bodyPos0 = bodies[currentFocus].getPosition().clone();
 
         milliSecondsPassed = ( performance.now() - oldTimeStamp );
     
@@ -101,14 +99,13 @@ function animate( timeStamp ) {
         
         ui.updateAttitude( bodies["DeepSpace"] );
 
-        bodyPos1 = bodies[ui.focusList.value].getPosition().clone();
+        bodyPos1 = bodies[currentFocus].getPosition().clone();
         dbodyPos.copy(bodyPos1.sub(bodyPos0).clone());
         
         oldTimeStamp = timeStamp;
         
         controls.object.position.add(dbodyPos);
         controls.update();
-        attitudeIndicatorControls.update();
         
         renderer.render(scene, camera);
         attitudeIndicatorRenderer.render( attitudeIndicatorScene, attitudeIndicatorCamera );
@@ -177,11 +174,16 @@ export function updateThrust( thrustLevel ) {
     bodies["DeepSpace"].setThrustLevel( thrustLevel );
 }
 
-export function addFocus( object ) {
-    ui.addFocus(object);
+export function addBodyFocus( object ) {
+    ui.addBodyFocus(object);
+}
+
+export function addSatFocus( object ) {
+    ui.addSatFocus(object);
 }
 
 export function setFocus( body ) {
+    currentFocus = body;
     controls.target = bodies[body].getPosition();
     controls.object.position.set( bodies[body].getPosition().x + 2 * bodies[body].radius, 
                                   bodies[body].getPosition().y + 2 * bodies[body].radius, 
@@ -221,25 +223,5 @@ function resize() {
 }
 
 window.onresize = resize;
-
-// const accordion = document.createElement('div');
-// accordion.id = 'accordion';
-// document.body.appendChild( accordion );
-
-// const orbitalElements = document.createElement('h3');
-// orbitalElements.innerText = "Orbital Elements";
-// orbitalElements.id = "orbitalElements";
-// accordion.appendChild( orbitalElements );
-
-// $(document).ready( function() {
-//     console.log("Hello Jquery loaded in js file");
-// } );
-
-// $( function() {
-//     console.log( "Making accordion." );
-//     $( "#accordion" ).accordion({
-//       collapsible: true
-//     });
-// } );
 
 animate();

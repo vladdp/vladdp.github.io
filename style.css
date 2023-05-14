@@ -13,27 +13,14 @@ html, body {
 #ai {
     position: absolute;
     z-index: 3;
-    width: 300px;
-    height: 300px;
-    bottom: 0%;
-    left: 0;
+    width: 200px;
+    height: 200px;
+    bottom: 50px;
     right: 0;
+    /* bottom: 0%;
+    left: 0;
     margin-left: auto;
-    margin-right: auto;
-}
-
-#accordion {
-    position: absolute;
-    color: whitesmoke;
-    top: 150px;
-    left: 20px;
-}
-
-#orbitalElements {
-    position: absolute;
-    color: whitesmoke;
-    top: 180px;
-    left: 20px;
+    margin-right: auto; */
 }
 
 #title {
@@ -43,6 +30,34 @@ html, body {
     margin: 20px;
 }
 
+#tabs {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+}
+
+.tab {
+    overflow: hidden;
+    /* border: 1px solid #ccc; */
+}
+
+.tab button {
+    background-color: whitesmoke;
+    border-radius: 5px;
+}
+
+.tab button:hover {
+    background-color: gainsboro;
+}
+
+.tab button.active {
+    background-color: coral;
+}
+
+.tabcontent {
+    display: none;
+}
+
 #addSatButt {
     position: absolute;
     /* border: 0; */
@@ -50,166 +65,186 @@ html, body {
     box-sizing: border-box;
     /* color: #FFFFFF; */
     /* display: flex; */
-    top: 75px;
+    top: 120px;
     left: 20px;
     height: 30px;
     width: 100px;
 }
 
-#focus {
+#body {
     position: absolute;
     color: whitesmoke;
     top: 120px;
     left: 20px;
 }
 
-#focusList {
+#bodyFocusList {
     position: absolute;
-    border-radius: 8px;
-    top: 120px;
-    left: 80px;
+    border-radius: 5px;
+    top: 150px;
+    left: 20px;
     width: 100px;
 }
 
-#orbParams {
+#bodyFocusButt {
+    position: absolute;
+    border-radius: 5px;
+    top: 150px;
+    left: 125px;
+}
+
+#sat {
     position: absolute;
     color: whitesmoke;
-    /* font-weight: bold; */
-    text-decoration: underline;
-    top: 200px;
+    top: 180px;
     left: 20px;
+}
+
+#satFocusList {
+    position: absolute;
+    border-radius: 5px;
+    top: 210px;
+    left: 20px;
+    width: 100px;
+}
+
+#satFocusButt {
+    position: absolute;
+    border-radius: 5px;
+    top: 210px;
+    left: 125px;
 }
 
 #semiMajor {
     position: absolute;
     color: whitesmoke;
-    top: 230px;
+    top: 120px;
     left: 20px;
 }
 
 #eccentricity {
     position: absolute;
     color: whitesmoke;
-    top: 250px;
+    top: 140px;
     left: 20px;
 }
 
 #inclination {
     position: absolute;
     color: whitesmoke;
-    top: 270px;
+    top: 160px;
     left: 20px;
 }
 
 #raan {
     position: absolute;
     color: whitesmoke;
-    top: 290px;
+    top: 180px;
     left: 20px;
 }
 
 #argPer {
     position: absolute;
     color: whitesmoke;
-    top: 310px;
+    top: 200px;
     left: 20px;
 }
 
 #trueAnomaly {
     position: absolute;
     color: whitesmoke;
-    top: 330px;
+    top: 220px;
     left: 20px;
 }
 
 #position {
     position: absolute;
     color: whitesmoke;
-    top: 360px;
+    top: 250px;
     left: 20px;
 }
 
 #r_x {
     position: absolute;
     color: whitesmoke;
-    top: 390px;
+    top: 270px;
     left: 30px;
 }
 
 #r_y {
     position: absolute;
     color: whitesmoke;
-    top: 410px;
+    top: 290px;
     left: 30px;
 }
 
 #r_z {
     position: absolute;
     color: whitesmoke;
-    top: 430px;
+    top: 310px;
     left: 30px;
 }
 
 #velocity {
     position: absolute;
     color: whitesmoke;
-    top: 460px;
+    top: 340px;
     left: 20px;
 }
 
 #v_x {
     position: absolute;
     color: whitesmoke;
-    top: 490px;
+    top: 360px;
     left: 30px;
 }
 
 #v_y {
     position: absolute;
     color: whitesmoke;
-    top: 510px;
+    top: 380px;
     left: 30px;
 }
 
 #v_z {
     position: absolute;
     color: whitesmoke;
-    top: 530px;
+    top: 400px;
     left: 30px;
 }
 
 #quaternion {
     position: absolute;
     color: whitesmoke;
-    top: 560px;
+    top: 430px;
     left: 20px;
 }
 
 #q_x {
     position: absolute;
     color: whitesmoke;
-    top: 590px;
+    top: 450px;
     left: 30px;
 }
 
 #q_y {
     position: absolute;
     color: whitesmoke;
-    top: 610px;
+    top: 470px;
     left: 30px;
 }
 
 #q_z {
     position: absolute;
     color: whitesmoke;
-    top: 630px;
+    top: 490px;
     left: 30px;
 }
 
 #q_w {
     position: absolute;
     color: whitesmoke;
-    top: 650px;
+    top: 510px;
     left: 30px;
 }
 
@@ -246,7 +281,7 @@ html, body {
     position: absolute;
     color: whitesmoke;
     bottom: 20px;
-    right: 60px;
+    right: 20px;
 
     user-select: none;
 }

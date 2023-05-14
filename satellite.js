@@ -51,11 +51,12 @@ class Satellite {
         this.posIJK = new THREE.Vector3();
         this.velIJK = new THREE.Vector3();
         this.accIJK = new THREE.Vector3();
+        this.angVel = new THREE.Vector3( 0, 0, 0 );
         this.h = new THREE.Vector3();
         this.K = new THREE.Vector3( 0, 0, 1 );
         this.n = new THREE.Vector3();
 
-        main.addFocus(this.option);
+        main.addSatFocus(this.option);
         main.updateParams( this );
 
         this.loadModel();
@@ -200,6 +201,14 @@ class Satellite {
     }
 
     update() {
+        // console.log( new THREE.Vector3( 0, 1, 0 ).applyQuaternion( this.getQuaternion() ) );
+
+        // console.log( this.model.scene );
+
+        this.model.scene.rotateX( this.angVel.x );
+        this.model.scene.rotateY( this.angVel.y );
+        this.model.scene.rotateZ( this.angVel.z );
+
         if ( this.thrustLevel > 0 && this.simSpeed === 1 ) {
             this.applyThrust();
             this.drawOrbit();
@@ -248,15 +257,15 @@ class Satellite {
     }
 
     roll( dir ) {
-        this.model.scene.rotation.z += 0.1 * dir * this.simSpeed;
+        this.angVel.z += 0.001 * dir
     }
 
     pitch( dir ) {
-        this.model.scene.rotation.x += 0.1 * dir * this.simSpeed;
+        this.angVel.x += 0.001 * dir
     }
     
     yaw( dir ) {
-        this.model.scene.rotation.y += 0.1 * dir * this.simSpeed;
+        this.angVel.y += 0.001 * dir
     }
 
 }
