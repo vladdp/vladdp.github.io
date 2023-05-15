@@ -14,7 +14,7 @@ var simSpeed = 1;
 ui.updateSimSpeed( simSpeed );
 
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1e12 );
-const attitudeIndicatorCamera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 100 );
+const attitudeIndicatorCamera = new THREE.PerspectiveCamera( 75, 1, 0.1, 100 );
 
 const renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -31,19 +31,28 @@ const attitudeIndicatorRenderer = new THREE.WebGLRenderer( {
 });
 attitudeIndicatorRenderer.setPixelRatio( window.devicePixelRatio );
 
+const aiTexture = new THREE.TextureLoader().load( "assets/att_ind.png" );
+aiTexture.anisotropy = attitudeIndicatorRenderer.capabilities.getMaxAnisotropy();
+
 const attitudeIndicator = new THREE.Mesh(
     new THREE.SphereGeometry( 10, 64, 64 ),
     new THREE.MeshBasicMaterial({
-        map: new THREE.TextureLoader().load( "assets/attitude_indicator.png" ),
+        map: aiTexture,
+        // metalness: 0.5,
     })
 );
 
-attitudeIndicatorCamera.position.set( 0, 0, 20 );
+// const aiLight = new THREE.PointLight( 'white', 1 );
+// aiLight.position.set( 100, 0, 0 );
+
+// attitudeIndicatorScene.add( aiLight );
+
+attitudeIndicatorCamera.position.set( 17, 0, 0 );
 
 attitudeIndicatorScene.add( attitudeIndicator );
 const attitudeIndicatorControls = new OrbitControls( attitudeIndicatorCamera, attitudeIndicatorRenderer.domElement );
 attitudeIndicatorControls.update();
-attitudeIndicatorControls.enabled = false;
+// attitudeIndicatorControls.enabled = false;
 
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.enablePan = false;
