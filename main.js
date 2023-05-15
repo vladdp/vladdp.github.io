@@ -42,6 +42,14 @@ const attitudeIndicator = new THREE.Mesh(
     })
 );
 
+const heading = new THREE.Mesh( 
+    new THREE.SphereGeometry( 10.01, 64, 64 ),
+    new THREE.MeshBasicMaterial( {
+        map: new THREE.TextureLoader().load( "assets/heading.png" ),
+        transparent: true,
+    })
+)
+
 // const aiLight = new THREE.PointLight( 'white', 1 );
 // aiLight.position.set( 100, 0, 0 );
 
@@ -50,6 +58,7 @@ const attitudeIndicator = new THREE.Mesh(
 attitudeIndicatorCamera.position.set( 17, 0, 0 );
 
 attitudeIndicatorScene.add( attitudeIndicator );
+attitudeIndicatorScene.add( heading );
 const attitudeIndicatorControls = new OrbitControls( attitudeIndicatorCamera, attitudeIndicatorRenderer.domElement );
 attitudeIndicatorControls.update();
 // attitudeIndicatorControls.enabled = false;
@@ -115,6 +124,10 @@ function animate( timeStamp ) {
         
         controls.object.position.add(dbodyPos);
         controls.update();
+
+        attitudeIndicator.rotation.x += 0.01;
+        attitudeIndicator.rotation.y += 0.01;
+        attitudeIndicator.rotation.z += 0.01;
         
         renderer.render(scene, camera);
         attitudeIndicatorRenderer.render( attitudeIndicatorScene, attitudeIndicatorCamera );
