@@ -5,22 +5,14 @@ html, body {
     margin: 0;
 }
 
-/* canvas {
-    width: 10%;
-    height: 100%;
-} */
-
 #ai {
     position: absolute;
     z-index: 3;
     width: 200px;
     height: 200px;
+    border-radius: 100px;
     bottom: 50px;
     right: 0;
-    /* bottom: 0%;
-    left: 0;
-    margin-left: auto;
-    margin-right: auto; */
 }
 
 #title {
@@ -38,7 +30,6 @@ html, body {
 
 .tab {
     overflow: hidden;
-    /* border: 1px solid #ccc; */
 }
 
 .tab button {

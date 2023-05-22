@@ -102,25 +102,6 @@ class CelestialBody {
         this.ellipse.geometry.computeBoundingSphere();
     }
 
-    setPos() {
-        this.pos = [];
-        this.p = this.a * ( 1-Math.pow(this.e, 2) );
-        this.r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
-
-        this.x = this.r * Math.cos( this.nu );
-        this.y = this.r * Math.sin( this.nu );
-        this.z = 0;
-        this.pos.push( new THREE.Vector3( this.x, this.y, this.z ) );
-
-        utils.rot_z( this.pos, this.argperi );
-        utils.rot_x( this.pos, -(Math.PI / 2) + this.i );
-        utils.rot_y( this.pos, this.loan );
-
-        this.sphere.position.set( this.parentPos.x + this.pos[0].x, 
-                                  this.parentPos.y + this.pos[0].y, 
-                                  this.parentPos.z + this.pos[0].z );
-    }
-
     update() {
         this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
     }
@@ -165,6 +146,7 @@ class CelestialBody {
 class Planet extends CelestialBody {
 
     constructor( data ) {
+
         super( data );
 
         this.parentPos = main.getBodyPosition( this.parent );
@@ -194,20 +176,7 @@ class Planet extends CelestialBody {
             })
         );
 
-        if ( this.name === "Saturn" ) {
-            this.ring = new THREE.Mesh(
-                new THREE.RingGeometry( 1.11*this.radius, 2.987*this.radius, 64),
-                new THREE.MeshBasicMaterial( { 
-                    color: this.color,
-                    transparent: true, 
-                    opacity: 0.9,
-                    // map: this.data.ringTexture,
-                } )
-            )
 
-            // main.addToScene( this.ring );
-            // this.ring.rotation.x += Math.PI / 2;
-        }
         main.addToScene( this.SOISphere );
         
         this.drawOrbit();
@@ -217,6 +186,7 @@ class Planet extends CelestialBody {
     }
 
     setPos() {
+
         this.pos = [];
         this.p = this.a * ( 1-Math.pow(this.e, 2) );
         this.r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
@@ -238,20 +208,17 @@ class Planet extends CelestialBody {
                                   this.parentPos.y + this.pos[0].y, 
                                   this.parentPos.z + this.pos[0].z );
 
-        if ( this.name === "Saturn" ) {
-            this.ring.position.set( this.parentPos.x + this.pos[0].x, 
-                this.parentPos.y + this.pos[0].y, 
-                this.parentPos.z + this.pos[0].z );
-        }
     }
 
     update() {
+
         this.sphere.rotation.y += this.rotationAngle * (this.simSpeed / 60);
 
         this.T = main.getT();
         this.updateElements( this.data );
         // this.drawOrbit();
         this.setPos();
+
     }
     
 }
@@ -259,6 +226,7 @@ class Planet extends CelestialBody {
 class Moon extends CelestialBody {
 
     constructor( data ) {
+
         super( data );
         this.fps = 60;
 
@@ -301,9 +269,11 @@ class Moon extends CelestialBody {
 
         main.addToScene( this.ellipse );
         main.addToScene( this.SOISphere );
+
     }
 
     setPos() {
+
         this.pos = [];
         this.p = this.a * ( 1 - Math.pow( this.e, 2 ) );
         this.r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
@@ -326,9 +296,11 @@ class Moon extends CelestialBody {
         this.SOISphere.position.set( this.parentPos.x + this.pos[0].x, 
                                   this.parentPos.y + this.pos[0].y, 
                                   this.parentPos.z + this.pos[0].z );
+
     }
 
     updateTrueAnomaly() {
+
         this.v = []
         this.nup = Math.sqrt( utils.MU / this.p );
 

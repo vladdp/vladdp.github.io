@@ -67,9 +67,9 @@ class Satellite {
         this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
 
-        this.drawOrbit();
+        // this.drawOrbit();
 
-        main.addToScene( this.ellipse );
+        // main.addToScene( this.ellipse );
     }
 
     async loadModel() {
@@ -159,6 +159,7 @@ class Satellite {
     }
 
     applyThrust() {
+
         let dir = new THREE.Vector3( 0, 1, 0 );
         dir.applyQuaternion( this.getQuaternion() );
         
@@ -198,12 +199,10 @@ class Satellite {
         this.model.scene.position.set( parentPos.x + this.posIJK.x, 
                                 parentPos.y + this.posIJK.z,
                                 parentPos.z - this.posIJK.y );
+
     }
 
     update() {
-        // console.log( new THREE.Vector3( 0, 1, 0 ).applyQuaternion( this.getQuaternion() ) );
-
-        // console.log( this.model.scene );
 
         this.model.scene.rotateX( this.angVel.x );
         this.model.scene.rotateY( this.angVel.y );
@@ -211,12 +210,11 @@ class Satellite {
 
         if ( this.thrustLevel > 0 && this.simSpeed === 1 ) {
             this.applyThrust();
-            this.drawOrbit();
         } else {
-            this.drawOrbit();
             this.setPos();
         }
-        
+        // this.drawOrbit();
+
         main.updateParams( this );
     }
 
@@ -242,6 +240,14 @@ class Satellite {
 
     getQuaternion() {
         return this.model.scene.quaternion;
+    }
+
+    getEuler() {
+
+        var q_dir = new THREE.Quaternion( 0, 0, 1, -1 ).normalize().multiply( this.model.scene.quaternion.clone().invert() );
+
+        return new THREE.Euler().setFromQuaternion( q_dir, 'XYZ' );
+
     }
 
     setThrustLevel( thrustLevel ) {

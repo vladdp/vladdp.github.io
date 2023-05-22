@@ -3,6 +3,7 @@
     
      {
         "name": "Sun",
+        "type": "Star",
         "parent": null,
         "texture": "assets/sun.jpg",
 

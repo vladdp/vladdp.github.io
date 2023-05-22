@@ -42,13 +42,18 @@ const attitudeIndicator = new THREE.Mesh(
     })
 );
 
+// attitudeIndicator.rotateZ( -Math.PI / 2 );
+
 const heading = new THREE.Mesh( 
-    new THREE.SphereGeometry( 10.01, 64, 64 ),
+    new THREE.SphereGeometry( 10.1, 64, 64 ),
     new THREE.MeshBasicMaterial( {
         map: new THREE.TextureLoader().load( "assets/heading.png" ),
         transparent: true,
     })
 )
+
+// heading.rotateZ( Math.PI / 2 );
+// heading.rotateX( - Math.PI / 2 );
 
 // const aiLight = new THREE.PointLight( 'white', 1 );
 // aiLight.position.set( 100, 0, 0 );
@@ -96,7 +101,7 @@ let bodyPos0, bodyPos1, dbodyPos = new THREE.Vector3();
 
 function animate( timeStamp ) {
     requestAnimationFrame( animate );
-    
+
     now = performance.now();
     elapsed = timeStamp - then;
     
@@ -104,9 +109,9 @@ function animate( timeStamp ) {
         then = timeStamp - ( elapsed % fpsInterval );
         bodyPos0 = bodies[currentFocus].getPosition().clone();
 
-        milliSecondsPassed = ( performance.now() - oldTimeStamp );
+        milliSecondsPassed = performance.now() - oldTimeStamp;
     
-        fps = Math.round( 1000 / milliSecondsPassed );
+        fps = Math.round( 1000 / (timeStamp - oldTimeStamp) );
         
         ui.updateFPS( fps );
         ui.updateDate( milliSecondsPassed * simSpeed );
@@ -125,10 +130,12 @@ function animate( timeStamp ) {
         controls.object.position.add(dbodyPos);
         controls.update();
 
-        attitudeIndicator.rotation.x += 0.01;
-        attitudeIndicator.rotation.y += 0.01;
-        attitudeIndicator.rotation.z += 0.01;
-        
+        attitudeIndicator.rotation.x = bodies["DeepSpace"].getEuler().x;
+        attitudeIndicator.rotation.y = bodies["DeepSpace"].getEuler().y;
+        attitudeIndicator.rotation.z = bodies["DeepSpace"].getEuler().z;
+
+        // console.log( attitudeIndicator.rotation );
+
         renderer.render(scene, camera);
         attitudeIndicatorRenderer.render( attitudeIndicatorScene, attitudeIndicatorCamera );
     } else {
@@ -140,11 +147,11 @@ document.addEventListener( 'keypress', ( event ) => {
     const keyName = event.key;
 
     if ( keyName === 'a' ) {
-        bodies['DeepSpace'].yaw( -1 );
+        bodies['DeepSpace'].yaw( 1 );
     }
     
     if ( keyName === 'd' ) {
-        bodies['DeepSpace'].yaw( 1 );
+        bodies['DeepSpace'].yaw( -1 );
     }
 
     if ( keyName === 's' ) {
@@ -156,11 +163,11 @@ document.addEventListener( 'keypress', ( event ) => {
     }
 
     if ( keyName === 'q' ) {
-        bodies['DeepSpace'].roll( -1 );
+        bodies['DeepSpace'].roll( 1 );
     }
     
     if ( keyName === 'e' ) {
-        bodies['DeepSpace'].roll( 1 );
+        bodies['DeepSpace'].roll( -1 );
     }
 
     if ( keyName === '=' ) {
@@ -205,13 +212,17 @@ export function addSatFocus( object ) {
 }
 
 export function setFocus( body ) {
+    
     currentFocus = body;
     controls.target = bodies[body].getPosition();
-    controls.object.position.set( bodies[body].getPosition().x + 2 * bodies[body].radius, 
-                                  bodies[body].getPosition().y + 2 * bodies[body].radius, 
-                                  bodies[body].getPosition().z + 2 * bodies[body].radius );
+    controls.object.position.set( 
+        bodies[body].getPosition().x + 2 * bodies[body].radius, 
+        bodies[body].getPosition().y + 2 * bodies[body].radius, 
+        bodies[body].getPosition().z + 2 * bodies[body].radius 
+    );
     
     controls.update();
+
 }
     
 export function getFocus() {
@@ -246,4 +257,8 @@ function resize() {
 
 window.onresize = resize;
 
-animate();
+window.addEventListener("load", () => {
+    console.log("Page is fully loaded.")
+
+    animate();
+})
