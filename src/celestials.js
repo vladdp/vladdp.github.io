@@ -46,7 +46,6 @@ class CelestialBody {
     }
 
     calculateE() {
-        var E = 0;
         var E = this.M - this.e * Math.sin( this.M );
 
         var f = E - this.e * Math.sin(E) - this.M;
@@ -54,7 +53,7 @@ class CelestialBody {
         var dE = nE - E;
         E = nE;
 
-        while ( Math.abs(dE) <= this.tol ) {
+        while ( Math.abs(dE) >= this.tol ) {
             f = E - this.e * Math.sin(E) - this.M;
             nE = E - ( f / ( 1 - this.e * Math.cos( E ) ) );
 
@@ -66,7 +65,7 @@ class CelestialBody {
     }
 
     calculateTrueAnomaly() {
-        const beta = this.e / ( 1 + Math.sqrt( 1 - this.e**2 ) );
+        const beta = this.e / ( 1 + Math.sqrt( 1 - this.e**2 ) ); 
 
         this.nu = this.E + 2 * Math.atan( ( beta * Math.sin(this.E) ) / ( 1 - beta * Math.cos(this.E) ) );
     }

@@ -161,31 +161,6 @@ class UI {
         this.v_z.id = 'v_z';
         this.infoTabContent.appendChild(this.v_z);
 
-        // this.quaternion = document.createElement('text');
-        // this.quaternion.innerText = 'quaternion';
-        // this.quaternion.id = 'quaternion';
-        // this.infoTabContent.appendChild(this.quaternion);
-
-        // this.q_x = document.createElement('text');
-        // this.q_x.innerText = 'x: ';
-        // this.q_x.id = 'q_x';
-        // this.infoTabContent.appendChild(this.q_x);
-
-        // this.q_y = document.createElement('text');
-        // this.q_y.innerText = 'y: ';
-        // this.q_y.id = 'q_y';
-        // this.infoTabContent.appendChild(this.q_y);
-
-        // this.q_z = document.createElement('text');
-        // this.q_z.innerText = 'z: ';
-        // this.q_z.id = 'q_z';
-        // this.infoTabContent.appendChild(this.q_z);
-
-        // this.q_w = document.createElement('text');
-        // this.q_w.innerText = 'w: ';
-        // this.q_w.id = 'q_w';
-        // this.infoTabContent.appendChild(this.q_w);
-
         this.thrust = document.createElement('text');
         this.thrust.innerText = 'Thrust: ';
         this.thrust.id = "thrust"
@@ -290,7 +265,7 @@ class UI {
         this.inclination.innerText = "i: " + utils.toDegrees(satellite.i).toFixed(3) + " deg";
         this.raan.innerText = "Ω: " + utils.toDegrees(satellite.raan).toFixed(3) + " deg";
         this.argPer.innerText = "ω: " + utils.toDegrees(satellite.w).toFixed(3) + " deg";
-        this.trueAnomaly.innerText = "ν: " + utils.toDegrees(satellite.v_0).toFixed(3) + " deg";
+        this.trueAnomaly.innerText = "ν: " + utils.toDegrees(satellite.nu).toFixed(3) + " deg";
     }
 
     updateThrustLevel() {

@@ -11,13 +11,12 @@ class Satellite {
     i = 0;
     raan = 0;
     w = 0;
-    raanw = 0;
-    v_0 = 0;
+    nu = 0;
 
     thrust = 1000;
     thrustLevel = 0;
 
-    resolution = 1000;
+    resolution = 5000;
 
     r = [];
     x = [];
@@ -36,10 +35,11 @@ class Satellite {
         this.option = document.createElement('option');
         this.option.text = this.name;
         this.fps = 60;
+        this.timeElapsed = 0;
 
         // this.parent = main.getFocus();
         this.parent = 'Earth';
-        this.parentPos = main.getBodyPosition( this.parent ).clone();
+        this.parentPos = main.getBodyPosition( this.parent );
 
         this.option = document.createElement('option');
         this.option.text = this.name;
@@ -61,21 +61,23 @@ class Satellite {
 
         this.loadModel();
 
-        let ellipsePoints = new Float32Array( this.resolution * 3 );
-        this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints( ellipsePoints );
-        // this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
-        this.ellipseMaterial = new THREE.MeshBasicMaterial( { 
-            color: color,
-            wireframe: true,
-            wireframeLinewidth: 2,
-        } );
-        // this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
+        this.ellipseGeometry = new THREE.BufferGeometry();
+        this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
         this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
-        this.ellipse.geometry.attributes.position.needsUpdate = true;
+        this.drawOrbit();
 
-        // this.drawOrbit();
+        this.ellipse.position.set(
+            this.parentPos.x,
+            this.parentPos.y,
+            this.parentPos.z,
+        )
 
-        // main.addToScene( this.ellipse );
+        this.ellipse.computeB
+
+        main.addToScene( this.ellipse );
+
+        this.period = 2 * Math.PI * Math.sqrt( this.a ** 3 / utils.MU );
+
     }
 
     async loadModel() {
@@ -88,7 +90,7 @@ class Satellite {
 
     drawOrbit() {
         let ellipsePoints = [];
-        this.p = this.a * (1-Math.pow(this.e, 2));
+        this.p = this.a * ( 1 - Math.pow( this.e, 2 ));
 
         for (var i=0; i < this.resolution; i++) {
             this.r[i] = this.p / ( 1 + this.e * Math.cos( this.theta[i] ) );
@@ -101,22 +103,29 @@ class Satellite {
         utils.rot_x( ellipsePoints, -(Math.PI / 2) + this.i );
         utils.rot_y( ellipsePoints, this.raan );
 
-        this.parentPos = main.getBodyPosition( this.parent ).clone();
+        let cPoints = [];
         
-        for (let i = 0; i < ellipsePoints.length; i++) {
-            ellipsePoints[i].add( this.parentPos );
+        for ( let i=0; i < this.resolution; i++ ) {
+            cPoints.push( ellipsePoints[i].x );
+            cPoints.push( ellipsePoints[i].y );
+            cPoints.push( ellipsePoints[i].z );
         }
 
-        this.ellipseGeometry.setFromPoints( ellipsePoints );
+        let points = new Float32Array( cPoints );
+
+        this.ellipseGeometry.setAttribute( 'position',
+            new THREE.BufferAttribute( points, 3 )
+        );
+
         this.ellipse.geometry.computeBoundingSphere();
     }
 
     setPos() {
         this.pos = [];
         this.p = this.a * ( 1 - this.e ** 2 );
-        this.pos_r = this.p / ( 1 + this.e * Math.cos( this.v_0 ) );
-        this.pos_x = this.pos_r * Math.cos( this.v_0 );
-        this.pos_y = this.pos_r * Math.sin( this.v_0 );
+        this.pos_r = this.p / ( 1 + this.e * Math.cos( this.nu ) );
+        this.pos_x = this.pos_r * Math.cos( this.nu );
+        this.pos_y = this.pos_r * Math.sin( this.nu );
         this.pos_z = 0;
         
         this.pos.push( new THREE.Vector3( this.pos_x, this.pos_y, this.pos_z ) );
@@ -127,6 +136,7 @@ class Satellite {
         
         this.posIJK.set( this.pos[0].x, -this.pos[0].z, this.pos[0].y);
 
+        this.calcVel();
         this.updateTrueAnomaly();
 
         let parentPos = main.getBodyPosition( this.parent );
@@ -135,26 +145,16 @@ class Satellite {
                                 parentPos.y + this.pos[0].y,
                                 parentPos.z + this.pos[0].z );
     }
-    
-    updateTrueAnomaly() {
+
+    calcVel() {
+
         this.v = []
         this.nup = Math.sqrt( utils.MU / this.p );
 
-        this.v_x = this.nup * -Math.sin( this.v_0 );
-        this.v_y = this.nup * ( this.e + Math.cos( this.v_0 ) );
+        this.v_x = this.nup * -Math.sin( this.nu );
+        this.v_y = this.nup * ( this.e + Math.cos( this.nu ) );
         this.v_z = 0;
 
-        this.nx = this.pos_x + this.v_x * ( this.simSpeed / this.fps );
-        this.ny = this.pos_y + this.v_y * ( this.simSpeed / this.fps );
-
-        this.nr = Math.sqrt( this.nx**2 + this.ny**2 );
-
-        if ( this.ny > 0 ) {
-            this.v_0 = Math.acos( this.nx / this.nr );
-        } else {
-            this.v_0 = 2 * Math.PI - Math.acos( this.nx / this.nr );
-        }        
-        
         this.v.push( new THREE.Vector3( this.v_x, this.v_y, this.v_z ) );
         
         utils.rot_z( this.v, this.w );
@@ -162,6 +162,34 @@ class Satellite {
         utils.rot_y( this.v, this.raan );
         
         this.velIJK.set( this.v[0].x, -this.v[0].z, this.v[0].y);
+
+    }
+
+    updateTrueAnomaly() {
+
+        let n = Math.sqrt( utils.MU / this.a ** 3 );
+        let M = n * ( this.timeElapsed % this.period );
+        
+        var E = M - this.e * Math.sin( M );
+        
+        var f = E - this.e * Math.sin( E ) - M;
+        var nE = E - ( f / ( 1 - this.e * Math.cos( E ) ) );
+        var dE = nE - E;
+        E = nE;
+        
+        while ( Math.abs(dE) >= 1e-6 ) {
+            f = E - this.e * Math.sin(E) - M;
+            nE = E - ( f / ( 1 - this.e * Math.cos( E ) ) );
+            
+            dE = nE - E;
+            E = nE;
+        }
+
+        let beta = this.e / ( 1 + Math.sqrt( 1 - this.e**2 ) ); 
+        console.log(  );
+
+        this.nu = E + 2 * Math.atan( ( beta * Math.sin( E ) ) / ( 1 - beta * Math.cos( E ) ) );
+        
     }
 
     applyThrust() {
@@ -192,10 +220,10 @@ class Satellite {
         if ( e.z < 0 ) {
             this.w = 2 * Math.PI - this.w;
         }
-        this.v_0 = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.length() ) )
+        this.nu = Math.acos( e.clone().dot( this.posIJK.clone() ) / ( this.e * this.posIJK.length() ) )
                     + 1e-5;
         if ( this.posIJK.clone().dot( this.velIJK.clone() ) < 0 ) {
-            this.v_0 = 2 * Math.PI - this.v_0;
+            this.nu = 2 * Math.PI - this.nu;
         }
 
         let parentPos = main.getBodyPosition( this.parent );
@@ -208,7 +236,10 @@ class Satellite {
 
     }
 
-    update() {
+    update( timeElapsed ) {
+
+        this.timeElapsed += timeElapsed / 1000;
+        console.log( this.timeElapsed );
 
         this.model.scene.rotateX( this.angVel.x );
         this.model.scene.rotateY( this.angVel.y );
@@ -216,10 +247,16 @@ class Satellite {
 
         if ( this.thrustLevel > 0 && this.simSpeed === 1 ) {
             this.applyThrust();
+            this.drawOrbit();
         } else {
             this.setPos();
         }
-        // this.drawOrbit();
+        
+        this.ellipse.position.set(
+            this.parentPos.x,
+            this.parentPos.y,
+            this.parentPos.z,
+        )
 
         main.updateParams( this );
     }
