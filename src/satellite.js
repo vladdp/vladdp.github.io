@@ -63,7 +63,13 @@ class Satellite {
 
         let ellipsePoints = new Float32Array( this.resolution * 3 );
         this.ellipseGeometry = new THREE.BufferGeometry().setFromPoints( ellipsePoints );
-        this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
+        // this.ellipseMaterial = new THREE.LineBasicMaterial( { color: color } );
+        this.ellipseMaterial = new THREE.MeshBasicMaterial( { 
+            color: color,
+            wireframe: true,
+            wireframeLinewidth: 2,
+        } );
+        // this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse = new THREE.Line( this.ellipseGeometry, this.ellipseMaterial );
         this.ellipse.geometry.attributes.position.needsUpdate = true;
 
@@ -244,7 +250,8 @@ class Satellite {
 
     getEuler() {
 
-        var q_dir = new THREE.Quaternion( 0, 0, 1, -1 ).normalize().multiply( this.model.scene.quaternion.clone().invert() );
+        var q_0 = new THREE.Quaternion( 0, 0, 1, -1 ).normalize().multiply( new THREE.Quaternion( 0, 1, 0, -1 ).normalize().invert() )
+        var q_dir = q_0.multiply( this.model.scene.quaternion.clone().invert() );
 
         return new THREE.Euler().setFromQuaternion( q_dir, 'XYZ' );
 

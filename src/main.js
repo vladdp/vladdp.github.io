@@ -5,6 +5,7 @@ import { CelestialBody, Planet, Moon } from 'celestials';
 import { Satellite } from 'sat';
 import data from 'celestial_data' assert { type: 'json'};
 import { UI } from 'ui';
+import * as utils from 'utils';
 
 
 const scene = new THREE.Scene();
@@ -42,8 +43,6 @@ const attitudeIndicator = new THREE.Mesh(
     })
 );
 
-// attitudeIndicator.rotateZ( -Math.PI / 2 );
-
 const heading = new THREE.Mesh( 
     new THREE.SphereGeometry( 10.1, 64, 64 ),
     new THREE.MeshBasicMaterial( {
@@ -52,21 +51,13 @@ const heading = new THREE.Mesh(
     })
 )
 
-// heading.rotateZ( Math.PI / 2 );
-// heading.rotateX( - Math.PI / 2 );
-
-// const aiLight = new THREE.PointLight( 'white', 1 );
-// aiLight.position.set( 100, 0, 0 );
-
-// attitudeIndicatorScene.add( aiLight );
-
 attitudeIndicatorCamera.position.set( 17, 0, 0 );
 
 attitudeIndicatorScene.add( attitudeIndicator );
 attitudeIndicatorScene.add( heading );
 const attitudeIndicatorControls = new OrbitControls( attitudeIndicatorCamera, attitudeIndicatorRenderer.domElement );
 attitudeIndicatorControls.update();
-// attitudeIndicatorControls.enabled = false;
+attitudeIndicatorControls.enabled = false;
 
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.enablePan = false;
@@ -93,6 +84,61 @@ ui.bodyFocusList.value = "Earth";
 
 const sunLight = new THREE.PointLight( "white", 1 );
 scene.add( sunLight );
+
+
+const eGeometry = new THREE.BufferGeometry();
+
+const vertices = new Float32Array( [
+	-10.0, -10.0,  10.0, // v0
+     10.0, -10.0,  10.0, // v1
+     10.0,  10.0,  10.0, // v2
+	-10.0,  10.0,  10.0, // v3
+] );
+
+const indices = [
+	0, 1, 2,
+	2, 3, 0,
+];
+
+eGeometry.setIndex( indices );
+eGeometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+
+const material = new THREE.MeshBasicMaterial( { 
+    color: 'white',
+    wireframe: true,
+} );
+const mesh = new THREE.Mesh( eGeometry, material );
+
+scene.add( mesh );
+
+
+const cGeometry = new THREE.BufferGeometry();
+
+const theta = utils.linspace( 0, 2*Math.PI, 1000 );
+const a = 10000;
+let x = [];
+let y = [];
+let z = [];
+let cPoints = [];
+
+for (var i=0; i < 1000; i++) {
+    x[i] = a * Math.cos( theta[i] );
+    y[i] = 0;
+    z[i] = a * Math.sin( theta[i] );
+    cPoints.push( x[i] );
+    cPoints.push( y[i] );
+    cPoints.push( z[i] );
+}
+
+const points = new Float32Array( cPoints );
+cGeometry.setAttribute( 'position', new THREE.BufferAttribute( points, 3 ) );
+const cMaterial = new THREE.LineBasicMaterial( { 
+    color: 'white',
+} );
+const cMesh = new THREE.Line( cGeometry, cMaterial );
+
+scene.add( cMesh );
+
 
 const fpsInterval = 1000 / 60;
 var now, then = performance.now();
@@ -129,6 +175,18 @@ function animate( timeStamp ) {
         
         controls.object.position.add(dbodyPos);
         controls.update();
+
+        mesh.position.set(
+            bodies["DeepSpace"].model.scene.position.x,
+            bodies["DeepSpace"].model.scene.position.y,
+            bodies["DeepSpace"].model.scene.position.z,
+        );
+        
+        cMesh.position.set(
+            bodies["Earth"].sphere.position.x,
+            bodies["Earth"].sphere.position.y,
+            bodies["Earth"].sphere.position.z,
+        )
 
         attitudeIndicator.rotation.x = bodies["DeepSpace"].getEuler().x;
         attitudeIndicator.rotation.y = bodies["DeepSpace"].getEuler().y;
@@ -258,7 +316,7 @@ function resize() {
 window.onresize = resize;
 
 window.addEventListener("load", () => {
-    console.log("Page is fully loaded.")
+    console.log("Page is fully loaded.");
 
     animate();
 })

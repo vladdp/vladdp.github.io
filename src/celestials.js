@@ -182,7 +182,7 @@ class Planet extends CelestialBody {
         this.drawOrbit();
         this.setPos();
 
-        // main.addToScene(this.ellipse);
+        main.addToScene(this.ellipse);
     }
 
     setPos() {
