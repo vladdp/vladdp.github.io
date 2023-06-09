@@ -226,6 +226,8 @@ class Satellite {
             this.nu = 2 * Math.PI - this.nu;
         }
 
+        this.period = 2 * Math.PI * Math.sqrt( this.a ** 3 / utils.MU );
+
         let parentPos = main.getBodyPosition( this.parent );
 
         this.posIJK.addScaledVector( this.velIJK, 1 / this.fps );
