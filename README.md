@@ -1,6 +1,7 @@
 ## ThreeJSat
 
 Satellite orbit simulation.\
+![screenshot](assets/screenshots/screenshot.png)
 \
 Controls:\
 a, d -> yaw\
