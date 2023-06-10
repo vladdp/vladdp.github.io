@@ -1,5 +1,16 @@
 ## ThreeJSat
-A simple geometric simulation of a satellite orbit around Earth.
-The satellite's orbital parameters can be changed and multiple satellites can be created.
 
-![screenshot](assets/screenshots/screenshot.png)
+Satellite orbit simulation.\
+\
+Controls:\
+a, d -> yaw\
+s, w -> pitch\
+q, e -> roll\
+\
+-, = -> decrease or increase sim speed ( +- 10000 )\
+\
+Thrust can be simulated using the slider. Thrust can only be applied when sim speed is 1.\
+\
+TODO:\
+Allow for spacecraft to enter orbit around other bodies.\
+Add new spacecraft with clearer options.
